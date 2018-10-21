@@ -50,12 +50,3 @@ INSERT INTO rezerwacje (id_wycieczki, id_osoby, status)
 VALUES (2, 10, 'A');
 
 
-CREATE OR REPLACE
-FUNCTION uczestnicy_wycieczki(id INT) RETURN TABLE
-BEGIN
-  RETURN (SELECT w.ID_WYCIECZKI, w.NAZWA, w.KRAJ, w.DATA, o.IMIE, o.NAZWISKO, r.STATUS
-          FROM WYCIECZKI w
-                 JOIN REZERWACJE r ON w.ID_WYCIECZKI = r.ID_WYCIECZKI
-                 JOIN OSOBY o ON r.ID_OSOBY = o.ID_OSOBY)
-  WHERE w.ID_WYCIECZKI = id
-end uczestnicy_wycieczki;
