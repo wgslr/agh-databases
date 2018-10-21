@@ -6,12 +6,17 @@ CREATE OR REPLACE TYPE osoby_record AS object (
 CREATE OR REPLACE TYPE osoby_table as table OF osoby_record;
 
 CREATE OR REPLACE
-FUNCTION uczestnicy_wycieczki --(id INT)
+FUNCTION uczestnicy_wycieczki (id INT)
   return osoby_table as
   v_ret osoby_table;
   BEGIN
-    v_ret := osoby_table();
-    v_ret.extend; v_ret(v_ret.count) := osoby_record('Makabra', 'Transylwania');
+    SELECT osoby_record(W.NAZWA, W.KRAJ)
+    BULK COLLECT INTO v_ret
+    FROM WYCIECZKI W
+    WHERE W.ID_WYCIECZKI = uczestnicy_wycieczki.id;
+
+--     v_ret := osoby_table();
+--     v_ret.extend; v_ret(v_ret.count) := osoby_record('Makabra2', 'Transylwania');
 --     v_ret := (SELECT --w.ID_WYCIECZKI,
 --                    w.NAZWA, w.KRAJ --,
 --         --                    w.DATA,
@@ -25,4 +30,7 @@ FUNCTION uczestnicy_wycieczki --(id INT)
     return v_ret;
   end uczestnicy_wycieczki;
 
-  DROP FUNCTION UCZESTNICY_WYCIECZKI
+  SELECT * FROM uczestnicy_wycieczki(1)
+
+
+SELECT * FROM WYCIECZKI
