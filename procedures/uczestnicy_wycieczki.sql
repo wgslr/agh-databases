@@ -17,9 +17,9 @@ FUNCTION uczestnicy_wycieczki(id INT)
   return osoby_wycieczki_t as v_ret osoby_wycieczki_t;
 
   BEGIN
-    SELECT
-    BULK COLLECT INTO osoby_wycieczki_r(w.KRAJ, w.DATA, w.NAZWA, o.IMIE,
+    SELECT osoby_wycieczki_r(w.KRAJ, w.DATA, w.NAZWA, o.IMIE,
                                                o.NAZWISKO, r.STATUS)
+    BULK COLLECT INTO v_ret
     FROM WYCIECZKI w
            JOIN REZERWACJE r ON w.ID_WYCIECZKI = r.ID_WYCIECZKI
            JOIN OSOBY o ON r.ID_OSOBY = o.ID_OSOBY;
