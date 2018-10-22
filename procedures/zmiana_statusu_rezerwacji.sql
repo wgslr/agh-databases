@@ -50,9 +50,3 @@ CREATE OR REPLACE PROCEDURE
 
   END zmiana_statusu_rezerwacji;
 
-SELECT *
-FROM REZERWACJE;
-
-BEGIN
-  zmiana_statusu_rezerwacji(25, 'N');
-end;
