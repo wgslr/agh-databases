@@ -46,6 +46,9 @@ CREATE OR REPLACE PROCEDURE
       UPDATE REZERWACJE
       SET STATUS = nowy_status
       WHERE NR_REZERWACJI = id_rezerwacji;
+
+      INSERT INTO REZERWACJE_LOG (ID_REZERWACJI, DATA, STATUS)
+      VALUES (id_rezerwacji, CURRENT_DATE, nowy_status);
     END CASE;
 
   END zmiana_statusu_rezerwacji;

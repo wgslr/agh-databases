@@ -2,6 +2,7 @@ CREATE OR REPLACE PROCEDURE
   dodaj_rezerwacje(id_wycieczki WYCIECZKI.ID_WYCIECZKI%TYPE,
                    id_osoby     OSOBY.ID_OSOBY%TYPE) AS
   istnieje integer;
+  nowy_id  integer;
   BEGIN
     SELECT COUNT(*) INTO istnieje
     FROM OSOBY
@@ -33,6 +34,12 @@ CREATE OR REPLACE PROCEDURE
 
     INSERT INTO REZERWACJE (id_wycieczki, id_osoby, STATUS)
     VALUES (dodaj_rezerwacje.id_wycieczki, dodaj_rezerwacje.id_osoby, 'N');
+
+    -- using sequence associated with REZERWACJE.nr_rezerwacji
+    SELECT "ISEQ$$_186444".currval INTO nowy_id FROM dual;
+
+    INSERT INTO REZERWACJE_LOG (ID_REZERWACJI, DATA, STATUS)
+    VALUES (nowy_id, CURRENT_DATE, 'N');
 
   END dodaj_rezerwacje;
 
