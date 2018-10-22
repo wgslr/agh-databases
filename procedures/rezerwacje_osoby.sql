@@ -15,8 +15,6 @@ FUNCTION rezerwacje_osoby(id_osoby OSOBY.ID_OSOBY%TYPE)
     FROM WYCIECZKI w
            JOIN REZERWACJE r ON w.ID_WYCIECZKI = r.ID_WYCIECZKI
            JOIN OSOBY o ON r.ID_OSOBY = o.ID_OSOBY
-    WHERE o.ID_OSOBY = rezerwacje_osoby.id_osoby;
+    WHERE o.ID_OSOBY = rezerwacje_osoby.id_osoby AND r.STATUS <> 'A';
     return v_ret;
   end rezerwacje_osoby;
-
-SELECT * FROM rezerwacje_osoby(2);

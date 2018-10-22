@@ -27,8 +27,6 @@ FUNCTION uczestnicy_wycieczki(id INT)
     FROM WYCIECZKI w
            JOIN REZERWACJE r ON w.ID_WYCIECZKI = r.ID_WYCIECZKI
            JOIN OSOBY o ON r.ID_OSOBY = o.ID_OSOBY
-    WHERE w.ID_WYCIECZKI = id;
+    WHERE w.ID_WYCIECZKI = id AND r.STATUS <> 'A';
     return v_ret;
   end uczestnicy_wycieczki;
-
-SELECT * FROM uczestnicy_wycieczki(10);
