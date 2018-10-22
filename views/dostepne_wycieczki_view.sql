@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW dostepne_wycieczki
+CREATE OR REPLACE VIEW dostepne_wycieczki_view
   AS
     SELECT w.kraj, w.data, w.nazwa, w.liczba_miejsc, w.liczba_wolnych_miejsc
     FROM wycieczki_miejsca w
