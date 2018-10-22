@@ -13,7 +13,7 @@ CREATE OR REPLACE TYPE osoby_wycieczki_t IS TABLE OF osoby_wycieczki_r;
 CREATE OR REPLACE
 FUNCTION uczestnicy_wycieczki(id INT)
   return osoby_wycieczki_t as v_ret osoby_wycieczki_t;
-  istnieje                          INTEGER;
+  istnieje                          integer;
   BEGIN
     SELECT COUNT(*) INTO istnieje FROM WYCIECZKI WHERE WYCIECZKI.ID_WYCIECZKI = id;
 
