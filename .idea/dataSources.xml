@@ -5,7 +5,7 @@
       <driver-ref>oracle</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>oracle.jdbc.OracleDriver</jdbc-driver>
-      <jdbc-url>jdbc:oracle:thin:@//dbadmin.iisg.agh.edu.pl:1521/ORCLPDB1</jdbc-url>
+      <jdbc-url>jdbc:oracle:thin:@//localhost:1521/ORCLPDB1</jdbc-url>
       <driver-properties>
         <property name="v$session.program" value="DataGrip" />
       </driver-properties>
