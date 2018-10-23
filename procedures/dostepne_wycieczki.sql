@@ -11,7 +11,8 @@ CREATE OR REPLACE TYPE wycieczki_r AS object (
 CREATE OR REPLACE TYPE wycieczki_t IS TABLE OF wycieczki_r;
 
 CREATE OR REPLACE
-FUNCTION dostepne_wycieczki(kraj WYCIECZKI.KRAJ%TYPE, data_od DATE, data_do DATE)
+FUNCTION dostepne_wycieczki(kraj    WYCIECZKI.KRAJ%TYPE, data_od DATE,
+                            data_do DATE)
   return wycieczki_t as v_ret wycieczki_t;
   istnieje                    integer;
   BEGIN
@@ -20,16 +21,22 @@ FUNCTION dostepne_wycieczki(kraj WYCIECZKI.KRAJ%TYPE, data_od DATE, data_do DATE
       raise_application_error(-20003, 'Nieprawidłowy przedział dat');
     END IF;
 
-    SELECT wycieczki_r(w.ID_WYCIECZKI, w.NAZWA, w.KRAJ, w.DATA, w.OPIS, w.LICZBA_MIEJSC)
+    SELECT wycieczki_r(w.ID_WYCIECZKI, w.NAZWA, w.KRAJ, w.DATA, w.OPIS,
+                       w.LICZBA_MIEJSC)
         BULK COLLECT INTO v_ret
     FROM WYCIECZKI w
     WHERE w.KRAJ = dostepne_wycieczki.kraj
       AND w.DATA >= data_od
-      AND w.DATA <= data_do;
+      AND w.DATA <= data_do
+      AND w.LICZBA_MIEJSC > (SELECT COUNT(*)
+                             FROM REZERWACJE r
+                             WHERE r.status <> 'A'
+                               AND r.ID_WYCIECZKI = w.ID_WYCIECZKI);
     return v_ret;
   end dostepne_wycieczki;
 
 -- przykład
-SELECT * FROM dostepne_wycieczki('Polska', TO_DATE('2016-01-01', 'YYYY-MM-DD'), TO_DATE('2020-01-01', 'YYYY-MM-DD'));
+SELECT *
+FROM dostepne_wycieczki('Polska', TO_DATE('2016-01-01', 'YYYY-MM-DD'), TO_DATE('2020-01-01', 'YYYY-MM-DD'));
 
 
