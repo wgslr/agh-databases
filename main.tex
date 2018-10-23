@@ -1,0 +1,578 @@
+\documentclass[12pt]{article}
+  \usepackage{geometry}
+  \geometry{
+    a4paper,
+    total={170mm,257mm},
+    left=20mm,
+    top=20mm,
+  }
+%Packages
+\usepackage{polski}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[hidelinks,linktoc=all]{hyperref}
+\usepackage{hyperref}
+
+%listings config
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\normalsize\color{mygreen}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2	                   % sets default tabsize to 2 spaces                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+%Define more keywords
+\lstdefinelanguage[Transact]{SQL}[]{SQL}{
+  morekeywords={FUNCTION, RETURNS, RETURN, BEGIN, TRY, CATCH, PROCEDURE, TRIGGER, VIEW},
+}
+
+\lstset{language=[Transact]SQL,
+       }
+
+%Content
+\begin{document}
+
+\title{Podstawy Baz Danych:\\System zarządzania konferencjami}
+\author{Wojciech Geisler, Artur Jopek}
+\date{}
+\maketitle
+%\newpage
+
+\tableofcontents
+
+\clearpage
+
+\section{Analiza wymagań}
+Tworzona baza danych przeznaczona jest dla firmy organizującej konferencji. Musi przechowywać informacje związane z przebiegiem konferencji, jej uczestnikami i ich płatnościami za udział w konferencjach.
+
+%Można wyróżnić następujących aktorów korzystających z informacji w bazie danych:
+%
+%\subsection{Organizator}
+%
+%\subsection{Klient}
+%Klienci rejestrują się na konferencje, wybierając w których dniach i warsztatach chcą uczestniczyć. 
+%
+%\subsubsection{Klient biznesowy}
+%Firma wykupująca miejsca na konferencji ma możliwośc zarezerwowania ich w wybranej liczbie i przesłania dokładnych danych uczestników w czasie późniejszym - o maksymalnie 2 tygodnie. Uczestnicy konferencji obecni z jej ramienia powinni mieć informację o swoim pracodawcy umieszczoną na identyfikator imiennych.
+
+
+
+Można wyróżnić następujących aktorów korzystających z informacji w bazie danych i potrzebną im funkcjonalność:
+
+\subsection{Organizator}
+\begin{enumerate}
+\item Zaplanowanie nadchodzących konferencji wraz z odbywającymi się na nich wykładami i warsztatmi
+\item Zaplanowanie zmian w cenie biletów na konferencje wraz ze zbliżającym się jej rozpocząciem
+\item Monitorowanie płatności od klientów, możliwość łatwej identyfikacji klientów zalegających z płatnościami
+\item Zapewnienie, że nieopłacone zamówienia nie będą honorowane (zostaną anulowane)
+\item Zapewnienie, że dany uczestnik zarejestrowany będzie tylko na jeden warsztat jednocześnie
+\item Dostęp do listy uczestników danego dnai konferencji bądź warsztatu
+\item Przygotowanie identyfikatoróœ imiennych dla uczestników konferencji
+\item Dostęp do statystyk informujących o najbardziej zaangażowanych klientach - analiza częstotliwości korzystania z usług firmy i płatności
+\end{enumerate}
+
+\subsection{Klient}
+\begin{enumerate}
+\item Dostęp do informacji o dostępnych warsztatach i wykładach na konferencji
+\item Zapoznanie się z cenami wstępu na dni konferencji i warsztaty w zależności od daty złożenia zamówienia
+\item Rezerwacja wstępu na dany dzień konferencji i miejsc na warsztatach
+\item Przekazanie swoich danych osobowych na potrzeby organizacji konferencji
+\end{enumerate}
+
+\subsubsection{Klient biznesowy}
+\begin{enumerate}
+\item Zbiorowa rezerwacja miejsc dla wielu uczestników i jednorazowe ich opłacenie
+\item Możliwość podania konkretnych danych osobowych w terminie późniejszym niż sama rezerwacja miejsc
+\end{enumerate}
+
+\section{Schemat bazy danych}
+
+% TODO opisać poszczególne
+
+\subsection{Diagram}
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{./schema.png}
+\end{figure}
+
+
+\subsection{Tabele}
+
+\subsubsection{conference}
+
+Opisuje konferencję organizowaną przez firmę. Informuje o jej lokalizacji (adresie) i obowiązującej zniżce studenckiej. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [conference\_id] Identyfikator konferencji
+\item [name] Nazwa konferencji
+\item [street] Ulica - część adresu miejsca odbywania się konferencji
+\item [building\_number] Numer budynku - część adresu miejsca odbywania się konferencji
+\item [city] Miasto - część adresu miejsca odbywania się konferencji
+\item [student\_discount\_percent] Procentowo wyrażona zniżka przysługująca studentom
+\end{description}
+
+\lstinputlisting{sql/tables/conference.sql}
+
+\subsubsection{conference\_day.sql}
+
+Jeden z potencjalnie wielu dni konferencji. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [conference\_day\_id] Identyfikator dnia konferencji
+\item [conference\_id] Identyfikator konferencji do której dzień przynależy
+\item [date] Data tego dnia
+\item [attendees\_limit] Maksymalna liczba uczestników
+\end{description}
+
+\lstinputlisting{sql/tables/conference_day.sql}
+
+\subsubsection{lecture}
+
+Opisuje wykład odbywający się w którymś dniu konferencji.\\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [lecture\_id] Identyfikator wykładu
+\item [conference\_day\_id] Identyfikator dnia konferencji w który odbywa się wykład
+\item [start] Godzina rozpoczęcia
+\item [end] Godzina rozpoczęcia
+\item [name] Tytuł wykładu
+\item [room] Miejsce odbywania się wykładu
+\end{description}
+\lstinputlisting{sql/tables/lecture.sql}
+
+
+\subsubsection{workshop}
+Opisuje warsztat odbywający się w którymś dniu konferencji. Warszat posiada ograniczenie na ilość uczestników. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [workshop\_id] Identyfikator warsztatu
+\item [conference\_day\_id] Identyfikator dnia konferencji w który odbywa się warszat
+\item [start] Godzina rozpoczęcia
+\item [end] Godzina rozpoczęcia
+\item [name] Tytuł warsztatu
+\item [description] Opis warsztatu
+\item [price] Koszt uczestnicwa w warsztaci
+\item [attendees\_limit] Maksymalna liczba uczestników
+\end{description}
+
+\lstinputlisting{sql/tables/workshop.sql}
+
+
+\subsubsection{buyer}
+
+Opisuje klienta kupującego bilety wstępu na konferencje. Może być firmą lub osobą prywatną (pole \texttt{is\_company}). Jeden klient (jeśli jest firmą) może złożyć zamówienie rezerwujące wiele miejsc na konferencji. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [buyer\_id] Identyfikator klienta
+\item [name] Nazwa klienta
+\item [billing\_address] Adres fakturowania klienta
+\item [phone] Telefon kontaktowy klienta
+\item [is\_company] Oznaczenie czy dany klient jest firmą
+\end{description}
+\lstinputlisting{sql/tables/buyer.sql}
+
+\subsubsection{order}
+Opisuje rezerwację miejsc na konferencji przez klienta.\\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [order\_id] Identyfikator zamówienia
+\item [buyer\_id] Identyfikator klienta składającego zamówienie
+\item [date] Data złożenia zamówienia
+\item [is\_canceled] Oznaczenie anulowanego zamówienia
+\end{description}
+\lstinputlisting{sql/tables/order.sql}
+
+\subsubsection{payment}
+Opisuje płatnośc klienta za zamówienie.\\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [payment\_id] Identyfikator płatności
+\item [order\_id] Identyfikator opłacanego zamówienia
+\item [date] Data dokonania płatności
+\item [means] Forma płatności. Może przyjmować jedną spośród wartości:
+  \begin{itemize}
+  \item cash
+  \item transfer
+  \item cheque
+  \item card
+  \end{itemize}
+\end{description}
+\lstinputlisting{sql/tables/payment.sql}
+
+\subsubsection{price}
+Opisuje progi cenowe konferencji. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [price\_id] Identyfikator progu cenowego
+\item [value] Kwota ceny
+\item [conference\_day\_id] Identyfikator dnia konferencji którego dotyczy próg cenowy
+\item [end\_date] Ostatni dzień obowiazywania progu cenowego
+\end{description}
+
+\lstinputlisting{sql/tables/price.sql}
+
+\subsubsection{attendee}
+Opisuje dane pojedynczego uczestnika konferencji.\\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [attendee\_id] Identyfikator uczesntika konferencji
+\item [name] Imię i nazwisko uczestnika
+\item [email] Adres e-mail uczestnika
+\end{description}
+\lstinputlisting{sql/tables/attendee.sql}
+
+\subsubsection{order\_item\_day}
+Realizuje powiązanie wiele do wielu między zamówieniem a dniami konferencji na które jest składane. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [order\_item\_day\_\_id] Identyfikator
+\item [order\_id] Identyfikator zamówienia
+\item [conference\_day\_id] Identyfikator dnia konferencji
+\item [attendees\_count] Liczba zarezerwowanych miejsc
+\item [students\_count] Liczba studentów pośród zarezerwowanych miejsc
+\item [is\_canceled] Oznaczenie anulowanego zamówienia, zawsze równe wartości w powiązanym rekordzie tabeli \texttt{order}
+\end{description}
+
+\lstinputlisting{sql/tables/order_item_day.sql}
+
+\subsubsection{order\_item\_workshop}
+Realizuje powiązanie wiele do wielu między rezerwacją miejsc w dniu konferencji a rezerwacją miejsca na konkretnym warsztacie. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [order\_item\_workshop\_id] Identyfikator
+\item [workshop\_id] Identyfikator warsztatu
+\item [order\_item\_day\_id] Identyfikator rezerwacji dnia konferencji
+\item [attendees\_count] Liczba zarezerwowanych miejsc
+\item [students\_count] Liczba studentów pośród zarezerwowanych miejsc
+\item [is\_canceled] Oznaczenie anulowanego zamówienia, zawsze równe wartości w powiązanym rekordzie tabeli \texttt{order}
+\end{description}
+\lstinputlisting{sql/tables/order_item_workshop.sql}
+
+\subsubsection{attendee\_order\_item\_day}
+Realizuje powiązanie wiele do wielu między rezerwacją miejsc w dniu konferencji danymi poszczególnych uczestników. \\
+
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [attendee\_order\_item\_day\_id] Identyfikator
+\item [order\_item\_day\_id] Identyfikator rezerwacji dnia konferencji
+\item [attendee\_id] Identyfikator uczestnika
+\item [is\_student] Oznaczenie, czy uczestnik zapisany jest na uczelnię jako student
+\item [student\_no] Numer legitymacji. Musi być podany jeśli \texttt{is\_student} jest ustawione.
+\end{description}
+
+\lstinputlisting{sql/tables/attendee_order_item_day.sql}
+
+\subsubsection{attendee\_order\_item\_workshop}
+Realizuje powiązanie wiele do wielu między rezerwacją miejsc w dniu konferencji danymi poszczególnych uczestników. \\
+
+\textbf{Pola tabeli:}
+\begin{description}
+\item [attendee\_order\_item\_workshop\_id] Identyfikator
+\item [order\_item\_workshop\_id] Identyfikator rezerwacji miejsca na warsztacie
+\item [attendee\_order\_item\_day\_id] Identyfikator rezerwacji dnia konferencji
+\end{description}
+
+\lstinputlisting{sql/tables/attendee_order_item_workshop.sql}
+
+\subsection{Definicje kluczy obcych}
+
+\lstinputlisting{sql/foreign_keys.sql}
+
+\section{Widoki}
+
+\subsection{Nadchodzące konferencje}
+Nadchodzące konferencje w rozbiciu na poszczególne dni, z informacją o obecnej cenie
+(przy zakupie jednego dnia oraz podsumowanie dla zakupu wejścia na wszystkie dni) oraz o liczbie wolnych miejsc (na dany dzień i kupując na całą konferencję).
+\lstinputlisting{sql/views/upcoming_conferences_view.sql}
+
+\subsection{Identyfikatory uczestników}
+Dane potrzebne do przygotowania identyfikatorów dla uczestników konferencji.
+\lstinputlisting{sql/views/badges_view.sql}
+
+\subsection{Brakujące dane uczestników}
+Lista klientów którzy nie przekazali danych uczestników dla swoich rezerwacji w wymaganym terminie.
+\lstinputlisting{sql/views/missing_information_view.sql}
+
+\subsection{Statystyki klientów}
+Lista klientów wraz z sumą ich płatności.
+\lstinputlisting{sql/views/client_stats_view.sql}
+
+\subsection{Statystyki miesięcznych przychodów}
+Przychody firmy w rozbiciu na miesiące.
+\lstinputlisting{sql/views/monthly_income_view.sql}
+
+\subsection{Wartości zamówień}
+Zamówienia wraz z ich łączną wartością.
+\lstinputlisting{sql/views/orders_view.sql}
+
+\subsection{Dostępne miejsca na warsztatach}
+Tabela warsztatów rozszerzona o informacje o dostępnych jeszcze miejscach
+\lstinputlisting{sql/views/workshops_view.sql}
+
+\section{Funkcje}
+\subsection{Konferencje}
+%-------------------------------
+% How to contribute
+%-------------------------------
+%\subsubsection{Nazwa}
+%Opis
+%\lstinputlisting{sql/functions/nazwa.sql}
+%-------------------------------
+
+\subsubsection{conference\_days}
+Zwraca wpisy w tabeli conference\_days odpowiadające dniom konferencji, której id jest podane.
+\lstinputlisting{sql/functions/conference_days.sql}
+
+\subsubsection{conference\_day\_available\_places}
+Zwraca ilość wolnych miejsc na dany dzień konferencji.
+\lstinputlisting{sql/functions/conference_day_available_places.sql}
+
+\subsubsection{day\_price\_on\_date}
+Zwraca koszt dnia konferencji przy zamówieniu złożonym w podanym dniu
+\lstinputlisting{sql/functions/day_price_on_date.sql}
+
+\subsubsection{conference\_day\_attendees}
+Zwraca tabele danych uczestnikow danej konferencji
+\lstinputlisting{sql/functions/conference_day_attendees.sql}
+
+\subsubsection{conference\_days\_with\_prices}
+Zwraca tabele danych dni konferencji, z cenami i wolnymi miejscami.
+\lstinputlisting{sql/functions/conference_days_with_prices.sql}
+
+\subsection{Warsztaty}
+\subsubsection{workshop\_available\_places}
+Zwraca ilość wolnych miejsc na dany warsztat.
+\lstinputlisting{sql/functions/workshop_available_places.sql}
+
+\subsubsection{workshop\_list\_by\_conference}
+Zwraca tabele danych warsztatów wrac z wolnymi miejscami, dla danej konferencji.
+\lstinputlisting{sql/functions/workshop_list_by_conference.sql}
+
+\subsection{Zamówienia}
+\subsubsection{order\_item\_day\_price}
+Zwraca cenę obowiązującą na dany dzień konferencji w dniu złożenia zamówienia.
+\lstinputlisting{sql/functions/order_item_day_price.sql}
+
+\subsubsection{workshops\_in\_order\_value}
+Zwraca łączny wartość miejsc na warsztaty w obrębie danego zamówienia.
+\lstinputlisting{sql/functions/order_item_day_price.sql}
+
+\section{Procedury}
+
+\subsection{Wyświetlające}
+\subsubsection{Liczby uczestników według dnia konferencji}
+\lstinputlisting{sql/procedures/get_conference_days_attendees_count.sql}
+
+\subsubsection{Statystyki odwiedzania wielu dni tej samej konferencji}
+
+Procedura podsumowuje ilu jest takich uczestników, którzy przyjdą na jeden, dwa itd. dni danej konferencji.
+
+\lstinputlisting{sql/procedures/get_days_per_attendee_stat.sql}
+
+\subsubsection{Lista wydarzeń w dniu konferencji}
+Zbiorcza lista wydarzeń - warsztatów i wykładów - odbywajacych się w danym dniu konferencji.
+\lstinputlisting{sql/procedures/get_events_in_a_day.sql}
+
+\subsection{Dodające}
+Przygotowanie procedur w celu wprowadzania danych do bazy pozwala na bardziej przyjazną dla użytkownika obsługę błędów.
+
+\subsubsection{Dodawanie nowej konferencji}
+\lstinputlisting{sql/procedures/add_conference.sql}
+
+\subsubsection{Dodawanie dnia konferencji}
+\lstinputlisting{sql/procedures/add_conference_day.sql}
+
+\subsubsection{Dodawanie dnia do zamówienia}
+\lstinputlisting{sql/procedures/add_order_day.sql}
+
+\subsubsection{Dodawanie zamówienia klienta prywatnego}
+\lstinputlisting{sql/procedures/add_individual_day_order.sql}
+
+\subsubsection{Dodawanie danych zamawiającego}
+\lstinputlisting{sql/procedures/add_buyer.sql}
+
+\subsubsection{Dodawanie danych uczestnika}
+\lstinputlisting{sql/procedures/add_attendee_day.sql}
+
+\subsubsection{Dodawanie wykładu}
+\lstinputlisting{sql/procedures/add_lecture.sql}
+
+\subsubsection{Dodawanie warsztatu}
+\lstinputlisting{sql/procedures/add_workshop.sql}
+
+\subsubsection{Dodawanie ceny dnia konferencji}
+\lstinputlisting{sql/procedures/add_price.sql}
+
+\subsubsection{Dodawanie płatności}
+\lstinputlisting{sql/procedures/add_payment.sql}
+
+\subsection{Aktualizujące}
+\subsubsection{Unieważnienie nieopłaconych zamówień}
+Procedura oznacza zamówienia nieopłacone w przeciagu 7 dni od złożenia jako anulowane.
+Powinna być uruchamiana raz dziennie, np. wywołaniem z Harmonogramu Zadań.
+
+\lstinputlisting{sql/procedures/update_overdue_orders.sql}
+
+\subsubsection{Zmiana limitu miejsc w warsztacie}
+Procedura sprawdza, czy liczba już zarezerwowwanych miejsc nie przekracza nowego limitu i zmienia limit miejsc na warsztacie.
+\lstinputlisting{sql/procedures/update_workshop_attendees_limit.sql}
+
+\subsubsection{Zmiana limitu miejsc w dniu konferencji}
+Procedura sprawdza, czy liczba już zarezerwowwanych miejsc nie przekracza nowego limitu i zmienia limit miejsc w dniu konferencji. Jeśli któryś z warsztatów odbywających się tego dnia ma wyższy limit również jest on zmieniany.
+\lstinputlisting{sql/procedures/update_workshop_attendees_limit.sql}
+
+
+
+\section{Triggery}
+
+
+\subsection{Propagacja anulowania zamówienia}
+Trigger propagujący ustawienie pola \texttt{is\_canceled} z tabeli \texttt{order} do tabel \texttt{order\_item\_day} i \texttt{order\_item\_workshop}.
+
+\lstinputlisting{sql/triggers/order_canceled_trigger.sql}
+
+\subsection{Sprawdenie wystarczajacej liczby miejsc w dniu konferencji}
+\lstinputlisting{sql/triggers/too_few_places_conference_day_trigger.sql}
+
+\subsection{Sprawdenie wystarczajacej liczby miejsc na warsztacie}
+\lstinputlisting{sql/triggers/too_few_places_workshop_trigger.sql}
+
+\subsection{Sprawdzenie limitu przypisania uczestników do rezerwacji}
+Trigger sprawdza, czy liczba uczestników (\textit{attendees}) przypisanych do zamówienia nie przekracza wielkości rezerwacji.
+
+\lstinputlisting{sql/triggers/attendees_not_above_reservation_trigger.sql}
+
+\subsection{Sprawdzenie limitu przypisania uczestników warsztatu do rezerwacji}
+
+\lstinputlisting{sql/triggers/workshop_attendees_not_above_reservation_trigger.sql}
+
+\subsection{Sprawdzenie zapowiedzianej liczby studentów}
+Trigger sprawdza, czy po uzupełnieniu danych uczestników liczba studentów jest zgodna z rezeracją.
+\lstinputlisting{sql/triggers/students_in_day_order_match_attendees.sql}
+
+\subsection{Sprawdzenie zapowiedzianej liczby studentów}
+Trigger sprawdza, czy po uzupełnieniu danych uczestników liczba studentów biorących udział w warsztacie jest zgodna z rezeracją.
+\lstinputlisting{sql/triggers/students_in_workshop_order_match_attendees.sql}
+
+\subsection{Sprawdenie limitów dnia konferencji i warsztatu }
+Trigger sprawdza, czy limit uczestników na dzien konferencji jest większy lub równy niż na warsztat.
+\lstinputlisting{sql/triggers/conference_day_limit_over_workshops_limit_trigger.sql}
+
+\subsection{Sprawdenie liczby uczestników warsztatu i dnia konferencji dla zmówienia}
+Trigger sprawdza, czy liczba zarejestrowanych uczestników na warsztaty nie przekracza zarejstrowanych na dzień konferencji dla zamówienia.
+\lstinputlisting{sql/triggers/day_attendees_more_than_workshop_attendees_trigger.sql}
+
+\subsection{Sprawdenie liczby rezerwowanyhc konferenji w jednym zamówieniu}
+\lstinputlisting{sql/triggers/one_conference_per_order_trigger.sql}
+
+\subsection{Sprawdenie przekroczenia 7 dni na zapłatę od daty zamówienia}
+\lstinputlisting{sql/triggers/payment_seven_days_after_order_trigger.sql}
+
+\subsection{Sprawdenie czy klient indywidualny podaje dane uczestników z zamówieniem.}
+Zamówienie składane przez klienta powinno być realizowane procedurą \texttt{add\_indivudal\_day\_order} która od razu uzupełnia jego dane jako uczestnika.
+\lstinputlisting{sql/triggers/private_buyer_must_provide_attendee_trigger.sql}
+
+\subsection{Sprawdenie nienachodzenia czasów warsztatów uczestników}
+\lstinputlisting{sql/triggers/attendee_only_one_workshop_at_one_time_trigger.sql}
+
+\subsection{Sprawdenie nieprzekraczania przez termin ceny terminu konferencji}
+
+\lstinputlisting{sql/triggers/price_end_not_after_conference_day_trigger.sql}
+
+
+\subsection{Sprawdenie istnienia ceny do początku dnia konferencji}
+
+\lstinputlisting{sql/triggers/exists_price_till_beginning_of_conference_day_trigger.sql}
+
+\subsection{Sprawdenie liczby rezerwowanych miejsc przez klienta indywidualnego}
+\lstinputlisting{sql/triggers/one_attendee_per_private_buyer_trigger.sql}
+
+\subsection{Sprawdenie uprzedniości daty zamówienia do daty dnia konferencji}
+\lstinputlisting{sql/triggers/order_before_conference_day_trigger.sql}
+
+\subsection{Sprawdenie liczby uczestników warsztatów i dnia koferencji dla zamówienia}
+Trigger sprawdzajacy, czy liczby uczestników warsztatów danego zamówienia jest nie wieksza od liczby uczestników dnia konferencji, do którego przypisany jest warsztat.
+\lstinputlisting{sql/triggers/workshop_attendees_fewer_than_day_attendees_trigger.sql}
+
+\subsection{Sprawdenie limitów dnia konferencji i warsztatu}
+Trigger sprawdza, czy limit dnia konferencji jest wiekszy od warsztatu bedacego w relacji z tym dniem.
+\lstinputlisting{sql/triggers/workshop_limit_below_day_limit_trigger.sql}
+
+\section{Indeksy}
+Oprócz indeksów tworzonych automatycznie w związku z poleceniami \texttt{CONSTRAINT PRIMARY KEY} i \texttt{CONSTRAINT UNIQUE} stworzone zostały indeksy majace na celu przyspieszenie wyszukiwania równoczesnych warsztatów uczestnika:
+
+\lstinputlisting{sql/indexes.sql}
+
+\section{Proponowane role w systemie}
+Role przedstawiane są w kolejności rosnących uprawnień, to znaczy role następne mają również uprawnienai dostępne wcześniejszym.
+
+\subsection{System www}
+Tymi uprawnieniami posługiwać się będzie witryna sieci web służąca klientom do przeglądania oferty firmy.
+
+Ma dostęp do odczytu informacji o przyszłych konferencjach (widok nadchodzących konferencji, procedura podajaca wydarzenia danego dnia). Może wywoływać procedury dodajace rezerwację.
+
+\subsection{Osoba kontaktujaca się z klientami}
+Ma dostęp do list uczestników danej konferencji lub warszatatu. 
+
+\subsection{Osoba obsługujaca klientów biznesowych}
+Ma dostęp do do widoku brakujących danych klientów, może dodawać zamówienia klientów oraz uzupełniać dane uczestników.
+
+\subsection{Koordynator konferencji}
+Może dodawać i modyfikować konferencje, warsztaty, wykłady i progi cenowe.
+
+\subsection{Zarząd firmy}
+Ma dostęp do odczytu wszystkich tabel i widoków, w szczególności widoków i procedur ze statystykami finansowymi.
+
+\subsection{Administrator}
+Pełen dostęp do przeglądania i modyfikowania bazy danych.
+
+
+\section{Generator danych}
+
+Do napisania generatora danych posłużyliśmy się językiem \textbf{Elixir}. Wybór podyktowany był zaciekawieniem tym młodym językiem funkcyjnym.
+
+Do komunikacji z bazą danych wykorzystana została biblioteka \textbf{Ecto} ( \url{https://github.com/elixir-ecto/ecto} ), a do generowania losowych wartości biblioteka \textbf{Faker} (\url{https://github.com/igas/faker}).
+
+
+\input{generator.tex}
+
+\end{document}
