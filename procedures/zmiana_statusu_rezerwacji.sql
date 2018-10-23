@@ -1,8 +1,9 @@
 CREATE OR REPLACE PROCEDURE
   zmiana_statusu_rezerwacji(id_rezerwacji REZERWACJE.NR_REZERWACJI%TYPE,
                             nowy_status   REZERWACJE.STATUS%TYPE) AS
-  stary_status REZERWACJE.STATUS%TYPE;
-  istnieje     integer;
+  stary_status        REZERWACJE.STATUS%TYPE;
+  istnieje            integer;
+  wolne_miejsca_delta integer;
   BEGIN
     SELECT COUNT(*) INTO istnieje
     FROM WYCIECZKI_PRZYSZLE wp
@@ -41,15 +42,15 @@ CREATE OR REPLACE PROCEDURE
           raise_application_error(-20101,
                                   'Brak miejsc dla przywrócenia anulowanej rezerwacji');
         END IF;
-
-    ELSE
-      UPDATE REZERWACJE
-      SET STATUS = nowy_status
-      WHERE NR_REZERWACJI = id_rezerwacji;
-
-      INSERT INTO REZERWACJE_LOG (ID_REZERWACJI, DATA, STATUS)
-      VALUES (id_rezerwacji, CURRENT_DATE, nowy_status);
+    ELSE null;
     END CASE;
+
+    UPDATE REZERWACJE
+    SET STATUS = nowy_status
+    WHERE NR_REZERWACJI = id_rezerwacji;
+
+    INSERT INTO REZERWACJE_LOG (ID_REZERWACJI, DATA, STATUS)
+    VALUES (id_rezerwacji, CURRENT_DATE, nowy_status);
 
   END zmiana_statusu_rezerwacji;
 

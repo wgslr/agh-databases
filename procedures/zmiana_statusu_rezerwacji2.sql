@@ -1,9 +1,17 @@
 CREATE OR REPLACE PROCEDURE
   zmiana_statusu_rezerwacji2(id_rezerwacji REZERWACJE.NR_REZERWACJI%TYPE,
                              nowy_status   REZERWACJE.STATUS%TYPE) AS
-  stary_status REZERWACJE.STATUS%TYPE;
-  istnieje     integer;
+  stary_status        REZERWACJE.STATUS%TYPE;
+  istnieje            integer;
+  wolne_miejsca_delta integer;
   BEGIN
+
+    IF stary_status = nowy_status
+    THEN
+      raise_application_error(-20104,
+                              'Zmiana statusu wymaga podania statusu innego niz obecny');
+    END IF;
+
     SELECT COUNT(*) INTO istnieje
     FROM WYCIECZKI_PRZYSZLE wp
            JOIN REZERWACJE r ON r.ID_WYCIECZKI = wp.ID_WYCIECZKI
@@ -32,7 +40,7 @@ CREATE OR REPLACE PROCEDURE
       WHEN stary_status = 'A'
       THEN
         SELECT COUNT(*) INTO istnieje
-        FROM DOSTEPNE_WYCIECZKI_VIEW2 dwv
+        FROM DOSTEPNE_WYCIECZKI_VIEW dwv
                JOIN REZERWACJE r ON r.ID_WYCIECZKI = dwv.ID_WYCIECZKI
         WHERE r.NR_REZERWACJI = id_rezerwacji;
 
@@ -40,22 +48,29 @@ CREATE OR REPLACE PROCEDURE
         THEN
           raise_application_error(-20101,
                                   'Brak miejsc dla przywrócenia anulowanej rezerwacji');
+        ELSE
+          wolne_miejsca_delta := -1;
         END IF;
-
     ELSE
-      UPDATE REZERWACJE
-      SET STATUS = nowy_status
-      WHERE NR_REZERWACJI = id_rezerwacji;
-
-      UPDATE WYCIECZKI w
-      SET LICZBA_WOLNYCH_MIEJSC = LICZBA_WOLNYCH_MIEJSC - 1
-      WHERE w.ID_WYCIECZKI = (SELECT ID_WYCIECZKI
-                              FROM REZERWACJE r
-                              WHERE r.NR_REZERWACJI = id_rezerwacji);
-
-      INSERT INTO REZERWACJE_LOG (ID_REZERWACJI, DATA, STATUS)
-      VALUES (id_rezerwacji, CURRENT_DATE, nowy_status);
+      IF nowy_status = 'A'
+      THEN
+        wolne_miejsca_delta := 1;
+      ELSE
+        wolne_miejsca_delta := 0;
+      end if;
     END CASE;
 
-  END zmiana_statusu_rezerwacji2;
+    UPDATE REZERWACJE
+    SET STATUS = nowy_status
+    WHERE NR_REZERWACJI = id_rezerwacji;
 
+    UPDATE WYCIECZKI w
+    SET LICZBA_WOLNYCH_MIEJSC = LICZBA_WOLNYCH_MIEJSC + wolne_miejsca_delta
+    WHERE w.ID_WYCIECZKI = (SELECT ID_WYCIECZKI
+                            FROM REZERWACJE r
+                            WHERE r.NR_REZERWACJI = id_rezerwacji);
+
+    INSERT INTO REZERWACJE_LOG (ID_REZERWACJI, DATA, STATUS)
+    VALUES (id_rezerwacji, CURRENT_DATE, nowy_status);
+
+  END zmiana_statusu_rezerwacji2;
