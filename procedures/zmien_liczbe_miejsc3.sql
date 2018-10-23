@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE zmien_liczbe_miejsc2(
+CREATE OR REPLACE PROCEDURE zmien_liczbe_miejsc3(
   id_w         WYCIECZKI.ID_WYCIECZKI%TYPE,
   nowe_miejsca WYCIECZKI.LICZBA_MIEJSC%TYPE) AS
   zajete integer;
@@ -14,8 +14,6 @@ CREATE OR REPLACE PROCEDURE zmien_liczbe_miejsc2(
     end if;
 
     UPDATE WYCIECZKI
-    SET LICZBA_MIEJSC         = nowe_miejsca,
-        LICZBA_WOLNYCH_MIEJSC = LICZBA_WOLNYCH_MIEJSC +
-                                (nowe_miejsca - LICZBA_MIEJSC)
+    SET LICZBA_MIEJSC = nowe_miejsca
     WHERE ID_WYCIECZKI = id_w;
   END;
