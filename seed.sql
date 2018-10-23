@@ -3,21 +3,21 @@ VALUES ('Adam', 'Kowalski', '87654321', 'tel: 6623');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
 VALUES ('Jan', 'Nowak', '12345678', 'tel: 2312, dzwonić po 18.00');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Janek', 'Nowaczek', '12345678', 'tel: 2312, dzwonić po 18.00')
+VALUES ('Janek', 'Nowaczek', '87654332', 'fax: 2312');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Pawel', 'Matuszek', '12345678', 'tel: 2312, dzwonić po 18.00');
+VALUES ('Pawel', 'Matuszek', '11111111', 'tel: 2412');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Matesz', 'Drwal', '12345678', 'tel: 2312, dzwonić po 13.00');
+VALUES ('Matesz', 'Drwal', '12345678', 'tel: 25121');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Eustachy', 'Jozek', '12345678', 'tel: 2312, dzwonić po 13.00');
+VALUES ('Eustachy', 'Jozek', '12345678', 'tel: 23999');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Janek', 'ANowaczek', '12345678', 'tel: 2312, dzwonić po 18.00');
+VALUES ('Michał', 'Nowaczek', '12345678', 'tel: 23444');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Pawel', 'AMatuszek', '12345678', 'tel: 2312, dzwonić po 18.00');
+VALUES ('Robert', 'Matuszek', '12345678', 'tel: 2312');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Matesz', 'ADrwal', '12345678', 'tel: 2312, dzwonić po 13.00');
+VALUES ('Ignacy', 'Drwal', '12345678', 'tel: 2312');
 INSERT INTO osoby (imie, nazwisko, pesel, kontakt)
-VALUES ('Eustachy', 'AJozek', '12345678', 'tel: 2312, dzwonić po 13.00');
+VALUES ('Adam', 'Mickiewicz', '12345678', 'tel: 2312');
 
 INSERT INTO wycieczki (nazwa, kraj, data, opis, liczba_miejsc)
 VALUES ('Wycieczka do Paryza', 'Francja', TO_DATE('2016-01-01', 'YYYY-MM-DD'), 'Ciekawa wycieczka ...', 3);
