@@ -89,30 +89,112 @@
 \section{Widoki}
 
 
-\subsection{views/wycieczki\_osoby.sql}
+\subsection{wycieczki\_osoby}
 \lstinputlisting{views/wycieczki_osoby.sql}
 
-\subsection{views/wycieczki\_osoby\_potwierdzone.sql}
+\subsection{wycieczki\_osoby\_potwierdzone}
 \lstinputlisting{views/wycieczki_osoby_potwierdzone.sql}
 
-\subsection{views/wycieczki\_przyszle.sql}
+\subsection{wycieczki\_przyszle}
 \lstinputlisting{views/wycieczki_przyszle.sql}
 
-\subsection{views/wycieczki\_miejsca.sql}
+\subsection{wycieczki\_miejsca}
 \lstinputlisting{views/wycieczki_miejsca.sql}
 
-\subsection{views/dostepne\_wycieczki\_view.sql}
+\subsection{dostepne\_wycieczki\_view}
 \lstinputlisting{views/dostepne_wycieczki_view.sql}
 
-\subsection{views/rezerwacje\_do\_anulowania.sql}
+\subsection{rezerwacje\_do\_anulowania}
 \lstinputlisting{views/rezerwacje_do_anulowania.sql}
 
-\section{}
+\section{Funkcje pobierające dane}
 
-\subsection{views/wycieczki\_miejsca2.sql}
+\subsection{uczestnicy\_wycieczki}
+\lstinputlisting{procedures/uczestnicy_wycieczki.sql}
+
+\subsection{rezerwacje\_osoby}
+\lstinputlisting{procedures/rezerwacje_osoby.sql}
+
+\subsection{przyszle\_rezerwacje\_osoby.sql}
+\lstinputlisting{procedures/przyszle_rezerwacje_osoby.sql}
+
+\subsection{dostepne\_wycieczki}
+\lstinputlisting{procedures/dostepne_wycieczki.sql}
+
+\section{Procedury modyfikujące dane}
+
+Prezentowane procedury uwzględniają użycie tabeli REZERWACJE_LOG dodanej w punkcie (6).
+
+\subsection{dodaj\_rezerwacje}
+\lstinputlisting{procedures/dodaj_rezerwacje.sql}
+
+\subsection{zmiana\_statusu\_rezerwacji}
+\lstinputlisting{procedures/zmiana_statusu_rezerwacji.sql}
+
+\subsection{zmien\_liczbe\_miejsc}
+\lstinputlisting{procedures/zmien_liczbe_miejsc.sql}
+
+\section{Dodanie tabeli dziennikującej}
+
+\lstinputlisting{tables/rezerwacje_log.sql.sql}
+
+\section{Dodanie pola liczba_wolnych_miejsc}
+
+\lstinputlisting{tables/wycieczki_liczba_wolnych_miejsc.sql}
+
+\subsection{Procedura aktualizująca}
+\lstinputlisting{procedures/przelicz.sql}
+
+\subsection{Dostosowane widoki}
+
+\subsubsection{wycieczki\_miejsca2}
 \lstinputlisting{views/wycieczki_miejsca2.sql}
 
-\subsection{views/dostepne\_wycieczki\_view2.sql}
+\subsubsection{dostepne\_wycieczki\_view2}
 \lstinputlisting{views/dostepne_wycieczki_view2.sql}
 
+\subsection{Dostosowane procedury}
+
+\subsubsection{dodaj\_rezerwacje2}
+\lstinputlisting{procedures/dodaj_rezerwacje2.sql}
+
+\subsubsection{dostepne\_wycieczki2}
+\lstinputlisting{procedures/dostepne_wycieczki2.sql}
+
+
+\subsubsection{zmiana\_statusu\_rezerwacji2}
+\lstinputlisting{procedures/zmiana_statusu_rezerwacji2.sql}
+
+
+\subsubsection{zmien\_liczbe\_miejsc2}
+\lstinputlisting{procedures/zmien_liczbe_miejsc2.sql}
+
+\section{Dodanie triggerów}
+
+
+\subsection{triger obsługujący dodanie rezerwacji}
+\lstinputlisting{triggers/nowa_rezerwacja_trigger.sql}
+
+
+\subsection{triger obsługujący zmianę statusu}
+\lstinputlisting{triggers/zmiana_statusu_trigger.sql}
+
+\subsection{triger zabraniający usunięcia rezerwacji}
+\lstinputlisting{triggers/usuniecie_rezerwacji_trigger.sql}
+
+\subsection{triger obsługujący zmianę liczby miejsc na poziomie wycieczki}
+\lstinputlisting{triggers/zmiana_miejsc_trigger.sql}
+
+\subsection{Dostosowane procedury}
+
+\subsubsection{dodaj\_rezerwacje3}
+\lstinputlisting{procedures/dodaj_rezerwacje3.sql}
+
+\subsubsection{zmiana\_statusu\_rezerwacji3}
+\lstinputlisting{procedures/zmiana_statusu_rezerwacji3.sql}
+
+\subsubsection{zmien\_liczbe\_miejsc3}
+\lstinputlisting{procedures/zmien_liczbe_miejsc3.sql}
+
 \end{document}
+
