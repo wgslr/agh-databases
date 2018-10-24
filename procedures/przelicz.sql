@@ -7,6 +7,3 @@ CREATE OR REPLACE PROCEDURE przelicz AS
                                                    AND r.STATUS <> 'A');
   END;
 
-  BEGIN
-    przelicz();
-  end;

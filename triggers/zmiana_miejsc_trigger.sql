@@ -1,5 +1,6 @@
 CREATE OR REPLACE TRIGGER zmiana_miejsc_trigger
-  BEFORE UPDATE OF liczba_miejsc ON wycieczki
+  BEFORE UPDATE OF liczba_miejsc
+  ON wycieczki
   FOR EACH ROW
   BEGIN
     SELECT :OLD.LICZBA_WOLNYCH_MIEJSC +

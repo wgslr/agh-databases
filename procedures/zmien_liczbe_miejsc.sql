@@ -13,5 +13,7 @@ CREATE OR REPLACE PROCEDURE zmien_liczbe_miejsc(
       raise_application_error(-20006, 'Nowa liczba miejsc zbyt niska');
     end if;
 
-    UPDATE WYCIECZKI SET LICZBA_MIEJSC = nowe_miejsca WHERE ID_WYCIECZKI = id_w;
+    UPDATE WYCIECZKI
+    SET LICZBA_MIEJSC = nowe_miejsca
+    WHERE ID_WYCIECZKI = id_w;
   END;

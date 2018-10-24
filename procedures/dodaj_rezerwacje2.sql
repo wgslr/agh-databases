@@ -1,6 +1,6 @@
 CREATE OR REPLACE PROCEDURE
   dodaj_rezerwacje2(id_wycieczki WYCIECZKI.ID_WYCIECZKI%TYPE,
-                   id_osoby     OSOBY.ID_OSOBY%TYPE) AS
+                    id_osoby     OSOBY.ID_OSOBY%TYPE) AS
   istnieje integer;
   nowy_id  integer;
   BEGIN
