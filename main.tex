@@ -59,7 +59,7 @@
 %Content
 \begin{document}
 
-\title{Bazy Danych}
+\title{Bazy Danych: Oracle PL/SQL}
 \author{Wojciech Geisler}
 \date{}
 \maketitle
@@ -115,7 +115,7 @@
 \subsection{rezerwacje\_osoby}
 \lstinputlisting{procedures/rezerwacje_osoby.sql}
 
-\subsection{przyszle\_rezerwacje\_osoby.sql}
+\subsection{przyszle\_rezerwacje\_osoby}
 \lstinputlisting{procedures/przyszle_rezerwacje_osoby.sql}
 
 \subsection{dostepne\_wycieczki}
@@ -123,7 +123,7 @@
 
 \section{Procedury modyfikujące dane}
 
-Prezentowane procedury uwzględniają użycie tabeli REZERWACJE\_LOG dodanej w punkcie (6).
+Prezentowane procedury uwzględniają użycie tabeli \texttt{REZERWACJE\_LOG} dodanej w punkcie (6).
 
 \subsection{dodaj\_rezerwacje}
 \lstinputlisting{procedures/dodaj_rezerwacje.sql}
@@ -138,7 +138,7 @@ Prezentowane procedury uwzględniają użycie tabeli REZERWACJE\_LOG dodanej w p
 
 \lstinputlisting{tables/rezerwacje_log.sql}
 
-\section{Dodanie pola liczba_wolnych_miejsc}
+\section{Dodanie pola liczba\_wolnych\_miejsc}
 
 \lstinputlisting{tables/wycieczki_liczba_wolnych_miejsc.sql}
 
@@ -170,7 +170,7 @@ Prezentowane procedury uwzględniają użycie tabeli REZERWACJE\_LOG dodanej w p
 \lstinputlisting{procedures/zmien_liczbe_miejsc2.sql}
 
 \section{Dodanie triggerów}
-
+Triggery uwzględniają zarówno tabelę \texttt{REZERWACJE\_LOG} jak aktualizowanie licznika \\ \texttt{LICZBA\_WOLNYCH\_MIEJSC}.
 
 \subsection{triger obsługujący dodanie rezerwacji}
 \lstinputlisting{triggers/nowa_rezerwacja_trigger.sql}
