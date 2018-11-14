@@ -1,5 +1,10 @@
+import com.sun.scenario.effect.impl.prism.PrDrawable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Supplier {
@@ -8,6 +13,9 @@ public class Supplier {
     String Street;
     String City;
 
+    @OneToMany
+    private Set<Product> supplies = new HashSet<>();
+
     public Supplier() {
     }
 
@@ -15,5 +23,9 @@ public class Supplier {
         CompanyName = companyName;
         Street = street;
         City = city;
+    }
+
+    public void addSuppliedProduct(Product p){
+        supplies.add(p);
     }
 }

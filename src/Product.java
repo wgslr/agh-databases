@@ -8,9 +8,6 @@ public class Product {
     public String ProductName;
     public int UnitsOnStock;
 
-    @ManyToOne
-    private Supplier SuppliedBy;
-
     public Product() {
         // for Hibernate
     }
@@ -18,13 +15,5 @@ public class Product {
     public Product(String name) {
         ProductName = name;
         UnitsOnStock = 0;
-    }
-
-    public Supplier getSuppliedBy() {
-        return SuppliedBy;
-    }
-
-    public void setSuppliedBy(Supplier suppliedBy) {
-        SuppliedBy = suppliedBy;
     }
 }

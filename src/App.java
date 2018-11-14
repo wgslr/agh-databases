@@ -3,7 +3,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class App {
@@ -11,37 +14,24 @@ public class App {
 
     public static void main(String argv[]) {
         SessionFactory sf = getSessionFactory();
-        Scanner inputScanner = new Scanner(System.in);
-
-//        Session session = sf.openSession();
-//        Transaction transaction = session.beginTransaction();
-//
-        System.out.println("Provide product name:");
-        String prodName = inputScanner.nextLine();
-//        System.out.println("Provide product stock value:");
-//        Product p = new Product(prodName);
-//        p.UnitsOnStock = inputScanner.nextInt();
-//        session.save(p);
-//
-//        transaction.commit();
-//        session.close();
+//        Scanner inputScanner = new Scanner(System.in);
 
         Session session = sf.openSession();
         Transaction transaction = session.beginTransaction();
 
-        System.out.println("Provide company name");
-        String company = inputScanner.nextLine();
-        System.out.println("Provide company city");
-        String city = inputScanner.nextLine();
-        System.out.println("Provide company street");
-        String street = inputScanner.nextLine();
+        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow");
+        List<Product> products = Stream.of("Komputer", "Myszka", "CPU")
+                .map(Product::new)
+                .peek(session::save)
+                .collect(Collectors.toList());
 
-        Product gotP = session.get(Product.class, prodName);
-        Supplier s = new Supplier(company, street, city);
+        for (Product product : products) {
+            System.out.println(product);
+            System.out.println(product.ProductName);
+            s.addSuppliedProduct(product);
+        }
 
-        gotP.setSuppliedBy(s);
         session.save(s);
-//        session.save(p);
 
         transaction.commit();
         session.close();
