@@ -5,8 +5,8 @@ import javax.persistence.*;
 @Entity
 public class Product {
     @Id
-    String ProductName;
-    int UnitsOnStock;
+    public String ProductName;
+    public int UnitsOnStock;
 
     public Product() {
         // for Hibernate
