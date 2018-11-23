@@ -12,5 +12,6 @@
 
         <mapping class="Product"/>
         <mapping class="Supplier"/>
+        <mapping class="Invoice"/>
     </session-factory>
 </hibernate-configuration>

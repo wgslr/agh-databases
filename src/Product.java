@@ -1,4 +1,6 @@
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Table(name = "Products")
@@ -11,6 +13,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "SUPPLIED_BY")
     private Supplier suppliedBy;
+
+    @ManyToMany(mappedBy = "includesProducts")
+    private Set<Invoice> canBeSoldIn = new HashSet<>();
 
     public Product() {
         // for Hibernate
