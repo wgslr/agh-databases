@@ -8,6 +8,10 @@ public class Product {
     public String ProductName;
     public int UnitsOnStock;
 
+    @ManyToOne
+    @JoinColumn(name = "SUPPLIED_BY")
+    private Supplier suppliedBy;
+
     public Product() {
         // for Hibernate
     }
@@ -15,5 +19,16 @@ public class Product {
     public Product(String name) {
         ProductName = name;
         UnitsOnStock = 0;
+    }
+
+    public Supplier getSuppliedBy() {
+        return suppliedBy;
+    }
+
+    public void setSuppliedBy(Supplier suppliedBy) {
+        this.suppliedBy = suppliedBy;
+        if (!suppliedBy.suppliesProduct(this)) {
+            suppliedBy.addSuppliedProduct(this);
+        }
     }
 }

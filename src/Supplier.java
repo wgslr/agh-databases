@@ -29,5 +29,10 @@ public class Supplier {
 
     public void addSuppliedProduct(Product p){
         supplies.add(p);
+        p.setSuppliedBy(this);
+    }
+
+    public boolean suppliesProduct(Product p){
+        return supplies.contains(p);
     }
 }
