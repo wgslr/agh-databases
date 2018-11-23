@@ -14,7 +14,6 @@ public class App {
 
     public static void main(String argv[]) {
         SessionFactory sf = getSessionFactory();
-//        Scanner inputScanner = new Scanner(System.in);
 
         Session session = sf.openSession();
         Transaction transaction = session.beginTransaction();

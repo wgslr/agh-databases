@@ -2,6 +2,7 @@ import com.sun.scenario.effect.impl.prism.PrDrawable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,7 @@ public class Supplier {
     String City;
 
     @OneToMany
+    @JoinColumn(name="SUPPLIED_BY")
     private Set<Product> supplies = new HashSet<>();
 
     public Supplier() {
