@@ -34,6 +34,7 @@ public class App {
 
         transaction.commit();
         session.close();
+        sf.close();
     }
 
     private static SessionFactory getSessionFactory() {
