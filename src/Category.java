@@ -1,7 +1,7 @@
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.collection.internal.PersistentList;
+
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +12,16 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int CategoryID;
     private String Name;
-    private List<Product> products;
+
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<Product> products = new ArrayList<>();
+
+    public Category() {
+    }
+
+    public Category(String name) {
+        this.Name = name;
+    }
 
     public int getCategoryID() {
         return CategoryID;

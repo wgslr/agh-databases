@@ -12,6 +12,9 @@ public class Product {
     @JoinColumn(name = "SUPPLIED_BY")
     private Supplier suppliedBy;
 
+    @ManyToOne
+    private Category category;
+
     public Product() {
         // for Hibernate
     }
@@ -20,6 +23,7 @@ public class Product {
         ProductName = name;
         UnitsOnStock = 0;
     }
+
 
     public Supplier getSuppliedBy() {
         return suppliedBy;
@@ -30,5 +34,13 @@ public class Product {
         if (!suppliedBy.suppliesProduct(this)) {
             suppliedBy.addSuppliedProduct(this);
         }
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
