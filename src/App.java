@@ -2,6 +2,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.omg.PortableInterceptor.INACTIVE;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,14 +49,29 @@ public class App {
 
         List<Invoice> invoices = session.createQuery("from Invoice").list();
 
-        for (Object inv : invoices) {
-            Invoice invoice = (Invoice) inv;
+        for (Invoice inv : invoices) {
             System.out.println(String.format("Products on invoice no %d:",
-                    invoice.getInvoiceNumber()));
-            for (Product p : invoice.getProducts()) {
+                    inv.getInvoiceNumber()));
+            for (Product p : inv.getProducts()) {
                 System.out.println(String.format("  %s", p.ProductName));
             }
         }
+
+        List<Product> gotProducts = session.createQuery("FROM Product p JOIN FETCH p.canBeSoldIn").list();
+
+
+        for (Product prod : gotProducts) {
+            System.out.println(String.format("Product '%s' is on invoices:",
+                    prod.ProductName));
+
+            invoices =
+                    session.createQuery("SELECT i from Product p  JOIN p.canBeSoldIn i WHERE  p" +
+                            ".ProductName = :name").setParameter("name", prod.ProductName).list();
+            for (Invoice i : invoices) {
+                System.out.println(i.getInvoiceNumber());
+            }
+        }
+
 
         transaction.commit();
 

@@ -1,4 +1,5 @@
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ public class Product {
     @JoinColumn(name = "SUPPLIED_BY")
     private Supplier suppliedBy;
 
-    @ManyToMany(mappedBy = "includesProducts")
+    @ManyToMany(mappedBy = "includesProducts", fetch = FetchType.EAGER)
     private Set<Invoice> canBeSoldIn = new HashSet<>();
 
     public Product() {
@@ -35,5 +36,9 @@ public class Product {
         if (!suppliedBy.suppliesProduct(this)) {
             suppliedBy.addSuppliedProduct(this);
         }
+    }
+
+    public Set<Invoice> getCanBeSoldIn() {
+        return canBeSoldIn;
     }
 }
