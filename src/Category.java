@@ -13,7 +13,7 @@ public class Category {
     private int CategoryID;
     private String Name;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany
     private List<Product> products = new ArrayList<>();
 
     public Category() {
@@ -41,6 +41,7 @@ public class Category {
 
     public void addProduct(Product p) {
         products.add(p);
+        p.setCategory(this);
     }
 
     public void removeProduct(Product p) {

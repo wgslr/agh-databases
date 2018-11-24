@@ -39,9 +39,9 @@ public class App {
 
         products.subList(0, 3).forEach(p -> categories.get(0).addProduct(p));
         products.subList(3, 5).forEach(p -> categories.get(1).addProduct(p));
+        categories.forEach(session::save);
 
         session.save(s);
-        categories.forEach(session::save);
 
         transaction.commit();
         transaction = session.beginTransaction();
@@ -57,8 +57,8 @@ public class App {
 
         System.out.println("Products:");
         for (Product p :
-                session.createQuery("SELECT p from Product p LEFT JOIN FETCH p.category",
-                        Product.class).list()) {
+                (List<Product>) session.createQuery("SELECT p from Product p LEFT JOIN FETCH p" +
+                        ".category").list()) {
 
             if (p.getCategory() != null) {
                 System.out.println(String.format("Product %s is in category %s", p.ProductName,

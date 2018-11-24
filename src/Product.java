@@ -42,5 +42,8 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+        if(!category.getProducts().contains(this)){
+            category.addProduct(this);
+        }
     }
 }
