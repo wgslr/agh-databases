@@ -15,8 +15,12 @@ public class Product {
     @JoinColumn(name = "SUPPLIED_BY")
     private Supplier suppliedBy;
 
+
     @ManyToMany(mappedBy = "includesProducts", fetch = FetchType.EAGER)
     private Set<Invoice> canBeSoldIn = new HashSet<>();
+
+    @ManyToOne
+    private Category category;
 
     public Product() {
         // for Hibernate
@@ -26,6 +30,7 @@ public class Product {
         ProductName = name;
         UnitsOnStock = 0;
     }
+
 
     public Supplier getSuppliedBy() {
         return suppliedBy;
@@ -40,5 +45,16 @@ public class Product {
 
     public Set<Invoice> getCanBeSoldIn() {
         return canBeSoldIn;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+        if(!category.getProducts().contains(this)){
+            category.addProduct(this);
+        }
     }
 }
