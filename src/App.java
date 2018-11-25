@@ -20,7 +20,7 @@ public class App {
         Session session = sf.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow");
+        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow", "123123");
         List<Product> products = Stream.of("Komputer", "Myszka", "CPU", "Pan Tadeusz",
                 "Harry Potter")
                 .map(Product::new)

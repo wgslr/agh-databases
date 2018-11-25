@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,8 +23,17 @@ public class JpaApp {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
 
-        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow");
-        Supplier s2 = new Supplier("Cyfronet", "Kawiory", "Krakow");
+        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow", "123123");
+        Supplier s2 = new Supplier("Cyfronet", "Kawiory", "Krakow", "789987");
+        List<Company> companies = new ArrayList<>();
+        companies.add(s);
+        companies.add(s2);
+
+        Stream.of("AGH", "UJ")
+                .map(name -> new Customer(name, "Aleja Mickiewicza", "Kraków", 0.2))
+                .forEach(companies::add);
+
+
         List<Product> products = Stream.of("Komputer", "Myszka", "CPU", "Pan Tadeusz",
                 "Harry Potter")
                 .map(Product::new)
@@ -44,8 +55,7 @@ public class JpaApp {
         products.subList(3, 5).forEach(p -> categories.get(1).addProduct(p));
         categories.forEach(em::persist);
 
-        em.persist(s);
-        em.persist(s2);
+        companies.forEach(em::persist);
 
         Invoice inv1 = new Invoice();
         Invoice inv2 = new Invoice();
@@ -81,12 +91,11 @@ public class JpaApp {
             System.out.println(String.format("Product '%s' is on invoices:", prod.ProductName));
 
             invoices = em.createQuery("SELECT i from Product p  JOIN p.canBeSoldIn i WHERE  p" +
-                            ".ProductName = :name").setParameter("name", prod.ProductName).getResultList();
+                    ".ProductName = :name").setParameter("name", prod.ProductName).getResultList();
             for (Invoice i : invoices) {
                 System.out.println(i.getInvoiceNumber());
             }
         }
-
 
 
         System.out.println("Categories:");
