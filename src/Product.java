@@ -16,7 +16,8 @@ public class Product {
     private Supplier suppliedBy;
 
 
-    @ManyToMany(mappedBy = "includesProducts", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "includesProducts", fetch = FetchType.EAGER,
+            cascade = CascadeType.PERSIST)
     private Set<Invoice> canBeSoldIn = new HashSet<>();
 
     @ManyToOne
@@ -53,7 +54,7 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
-        if(!category.getProducts().contains(this)){
+        if (!category.getProducts().contains(this)) {
             category.addProduct(this);
         }
     }

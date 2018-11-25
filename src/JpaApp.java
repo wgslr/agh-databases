@@ -21,7 +21,7 @@ public class JpaApp {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
 
-        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow");
+        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow", "Polska");
         List<Product> products = Stream.of("Komputer", "Myszka", "CPU", "Pan Tadeusz",
                 "Harry Potter")
                 .map(Product::new)

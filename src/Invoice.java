@@ -10,7 +10,7 @@ public class Invoice {
     private int InvoiceNumber;
     private int Quantity;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private Set<Product> includesProducts = new HashSet<>();
 
     public Invoice() {

@@ -1,9 +1,6 @@
 import com.sun.scenario.effect.impl.prism.PrDrawable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,28 +8,36 @@ import java.util.Set;
 public class Supplier {
     @Id
     String CompanyName;
-    String Street;
-    String City;
+
+    @Embedded
+    private Address Address;
 
     @OneToMany
-    @JoinColumn(name="SUPPLIED_BY")
+    @JoinColumn(name = "SUPPLIED_BY")
     private Set<Product> supplies = new HashSet<>();
 
     public Supplier() {
     }
 
-    public Supplier(String companyName, String street, String city) {
+    public Supplier(String companyName, String street, String city, String country) {
         CompanyName = companyName;
-        Street = street;
-        City = city;
+        this.Address = new Address(street, city, country);
     }
 
-    public void addSuppliedProduct(Product p){
+    public void addSuppliedProduct(Product p) {
         supplies.add(p);
         p.setSuppliedBy(this);
     }
 
-    public boolean suppliesProduct(Product p){
+    public boolean suppliesProduct(Product p) {
         return supplies.contains(p);
+    }
+
+    public Address getAddress() {
+        return Address;
+    }
+
+    public void setAddress(Address address) {
+        Address = address;
     }
 }
