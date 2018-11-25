@@ -2,6 +2,7 @@ import com.sun.scenario.effect.impl.prism.PrDrawable;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -13,7 +14,6 @@ public class Supplier extends Company {
     @OneToMany
     @JoinColumn(name = "SUPPLIED_BY")
     private Set<Product> supplies = new HashSet<>();
-
 
     public Supplier() {
         super();

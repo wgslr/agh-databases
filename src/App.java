@@ -1,122 +1,157 @@
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cache.spi.entry.CacheEntry;
-import org.hibernate.cfg.Configuration;
-import org.omg.PortableInterceptor.INACTIVE;
+import org.omg.PortableInterceptor.SUCCESSFUL;
 
-import java.awt.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Scanner;
 
 
 public class App {
-    public static SessionFactory sessionFactory;
+    private static EntityManagerFactory entityManagerFactory;
+    private static EntityManager entityManager;
+
 
     public static void main(String argv[]) {
-        SessionFactory sf = getSessionFactory();
+        entityManager = getEntityManager();
 
-        Session session = sf.openSession();
-        Transaction transaction = session.beginTransaction();
+        try {
+            CliMenu mainMenu = new CliMenu("Choose action");
+            mainMenu.setOneshot(false);
+            mainMenu.addOption("Add product", App::addProduct);
+            mainMenu.addOption("List products", App::listProducts);
+            mainMenu.addOption("Add supplier", App::addSupplier);
+            mainMenu.addOption("List suppliers", App::listSuppliers);
+            mainMenu.addOption("Add customer", App::addCustomer);
+            mainMenu.addOption("List customers", App::listCustomers);
+            mainMenu.addOption("Exit", x -> {
+                cleanup();
+                System.exit(0);
+            });
 
-        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow", "123123");
-        List<Product> products = Stream.of("Komputer", "Myszka", "CPU", "Pan Tadeusz",
-                "Harry Potter")
-                .map(Product::new)
-                .peek(p -> p.UnitsOnStock = 100)
-                .peek(session::save)
-                .collect(Collectors.toList());
+            mainMenu.display();
 
-        List<Category> categories = Stream.of("Elektronika", "Ksiazki")
-                .map(Category::new)
-                .collect(Collectors.toList());
 
-        for (Product product : products) {
-            System.out.println(product);
-            System.out.println(product.ProductName + " " + product.UnitsOnStock);
-            s.addSuppliedProduct(product);
+        } finally {
+            cleanup();
         }
-
-        products.subList(0, 3).forEach(p -> categories.get(0).addProduct(p));
-        products.subList(3, 5).forEach(p -> categories.get(1).addProduct(p));
-        categories.forEach(session::save);
-
-        session.save(s);
-
-        Invoice inv1 = new Invoice();
-        Invoice inv2 = new Invoice();
-
-        inv1.addProduct(products.get(0), 5);
-        inv1.addProduct(products.get(1), 6);
-
-        inv2.addProduct(products.get(2), 2);
-
-        session.save(inv1);
-        session.save(inv2);
-
-        transaction.commit();
-        transaction = session.beginTransaction();
-
-        List<Invoice> invoices = session.createQuery("from Invoice").list();
-
-        for (Invoice inv : invoices) {
-            System.out.println(String.format("Products on invoice no %d:",
-                    inv.getInvoiceNumber()));
-            for (Product p : inv.getProducts()) {
-                System.out.println(String.format("  %s", p.ProductName));
-            }
-        }
-
-        List<Product> gotProducts = session.createQuery("FROM Product p JOIN FETCH p.canBeSoldIn").list();
-
-
-        for (Product prod : gotProducts) {
-            System.out.println(String.format("Product '%s' is on invoices:", prod.ProductName));
-
-            invoices = session.createQuery("SELECT i from Product p  JOIN p.canBeSoldIn i WHERE  p" +
-                            ".ProductName = :name").setParameter("name", prod.ProductName).list();
-            for (Invoice i : invoices) {
-                System.out.println(i.getInvoiceNumber());
-            }
-        }
-
-
-
-        System.out.println("Categories:");
-        for (Category cat : session.createQuery("from Category", Category.class).list()) {
-            System.out.println(String.format("  %2d %s", cat.getCategoryID(), cat.getName()));
-            for (Product p : cat.getProducts()) {
-                System.out.println(String.format("    %s", p.ProductName));
-            }
-        }
-
-
-        System.out.println("Products:");
-        for (Product p :
-                (List<Product>) session.createQuery("SELECT p from Product p LEFT JOIN FETCH p" +
-                        ".category").list()) {
-
-            if (p.getCategory() != null) {
-                System.out.println(String.format("Product %s is in category %s", p.ProductName,
-                        p.getCategory().getName()));
-            } else {
-                System.out.println(
-                        String.format("Product %s has no category assigned", p.ProductName));
-            }
-        }
-
-        transaction.commit();
-
-        session.close();
-        sf.close();
     }
 
-    private static SessionFactory getSessionFactory() {
-        if (sessionFactory == null) {
-            Configuration cfg = new Configuration();
-            sessionFactory = cfg.configure().buildSessionFactory();
+    private static EntityManager getEntityManager() {
+        if (entityManagerFactory == null) {
+            entityManagerFactory = Persistence.createEntityManagerFactory("derby");
         }
-        return sessionFactory;
+        return entityManagerFactory.createEntityManager();
+    }
+
+    private static void cleanup() {
+        entityManager.close();
+        entityManagerFactory.close();
+    }
+
+    private static void addProduct(Scanner scanner) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        System.out.println("Name: ");
+        String name = readNonemptyLine(scanner);
+
+        System.out.println("Stock: ");
+        int initialStock = scanner.nextInt();
+
+        Product product = new Product(name);
+        product.UnitsOnStock = initialStock;
+
+        List<Supplier> suppliers = getAll(Supplier.class);
+        CliMenu supplierMenu = new CliMenu("Choose product's supplier");
+        suppliers.forEach(s ->
+                supplierMenu.addOption(s.CompanyName, x -> product.setSuppliedBy(s))
+        );
+        supplierMenu.display();
+
+        entityManager.persist(product);
+        transaction.commit();
+    }
+
+    private static void listProducts(Scanner scanner) {
+        List<Product> products = getAll(Product.class);
+
+        System.out.println("Stock | Name\t\t| Supplier");
+        products.forEach(
+                p -> System.out.println(String.format("%5d | %s | %s", p.UnitsOnStock,
+                        p.ProductName, p.getSuppliedBy().CompanyName)));
+    }
+
+    private static void addSupplier(Scanner scanner) {
+        String name, street, city, bankAccount;
+
+        System.out.println("Company name: ");
+        name = readNonemptyLine(scanner);
+
+        System.out.println("Street: ");
+        street = readNonemptyLine(scanner);
+
+        System.out.println("City: ");
+        city = readNonemptyLine(scanner);
+
+        System.out.println("Bank account: ");
+        bankAccount = readNonemptyLine(scanner);
+
+        Supplier s = new Supplier(name, street, city, bankAccount);
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(s);
+        transaction.commit();
+    }
+
+    private static void listSuppliers(Scanner scanner) {
+        List<Supplier> suppliers = getAll(Supplier.class);
+
+        System.out.println("Name");
+        suppliers.stream().map(s -> s.CompanyName).forEach(System.out::println);
+    }
+
+    private static void addCustomer(Scanner scanner) {
+        String name, street, city;
+        double discount;
+
+        System.out.println("Company name: ");
+        name = readNonemptyLine(scanner);
+
+        System.out.println("Street: ");
+        street = readNonemptyLine(scanner);
+
+        System.out.println("City: ");
+        city = readNonemptyLine(scanner);
+
+        System.out.println("Bank account: ");
+        discount = scanner.nextDouble();
+
+        Customer c = new Customer(name, street, city, discount);
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.persist(c);
+        transaction.commit();
+    }
+
+    private static void listCustomers(Scanner scanner) {
+        List<Customer> customers = getAll(Customer.class);
+
+        System.out.println("Name");
+        customers.stream().map(c -> c.CompanyName).forEach(System.out::println);
+    }
+
+    private static <T> List<T> getAll(Class<T> entity) {
+        return entityManager.createQuery("SELECT t FROM " + entity.getName() + " t", entity)
+                .getResultList();
+    }
+
+    private static String readNonemptyLine(Scanner scanner) {
+        String line;
+        do {
+            line = scanner.nextLine();
+        } while (line == null || line.chars().allMatch(Character::isWhitespace));
+        return line;
     }
 }

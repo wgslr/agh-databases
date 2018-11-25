@@ -138,6 +138,7 @@ public class JpaApp {
         transaction.commit();
 
         em.close();
+        entityManagerFactory.close();
     }
 
     private static EntityManager getEntityManager() {

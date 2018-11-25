@@ -12,7 +12,7 @@ public class Product {
     public int UnitsOnStock;
 
     @ManyToOne
-    @JoinColumn(name = "SUPPLIED_BY")
+    @JoinColumn(name = "SUPPLIED_BY", nullable = false)
     private Supplier suppliedBy;
 
 
