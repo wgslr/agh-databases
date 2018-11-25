@@ -2,6 +2,7 @@ import javax.persistence.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Table(name = "Products")
@@ -19,6 +20,10 @@ public class Product {
     @ManyToMany(mappedBy = "includesProducts", fetch = FetchType.EAGER,
             cascade = CascadeType.PERSIST)
     private Set<Invoice> canBeSoldIn = new HashSet<>();
+
+    @ManyToMany(mappedBy = "products",
+            cascade = CascadeType.PERSIST)
+    private Set<Order> orders = new HashSet<>();
 
     @ManyToOne
     private Category category;
@@ -58,4 +63,9 @@ public class Product {
             category.addProduct(this);
         }
     }
+
+    public Set<Order> getOrders() {
+        return Collections.unmodifiableSet(orders);
+    }
+
 }
