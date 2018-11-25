@@ -23,10 +23,10 @@ public class JpaApp {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
 
-        Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow", "123123");
+        Supplier s1 = new Supplier("Komputronik", "Kamienskiego", "Krakow", "123123");
         Supplier s2 = new Supplier("Cyfronet", "Kawiory", "Krakow", "789987");
         List<Company> companies = new ArrayList<>();
-        companies.add(s);
+        companies.add(s1);
         companies.add(s2);
 
         Stream.of("AGH", "UJ")
@@ -48,7 +48,7 @@ public class JpaApp {
         for (Product product : products) {
             System.out.println(product);
             System.out.println(product.ProductName + " " + product.UnitsOnStock);
-            s.addSuppliedProduct(product);
+            s1.addSuppliedProduct(product);
         }
 
         products.subList(0, 3).forEach(p -> categories.get(0).addProduct(p));
@@ -119,6 +119,20 @@ public class JpaApp {
                 System.out.println(
                         String.format("Product %s has no category assigned", p.ProductName));
             }
+        }
+
+        List<Supplier> suppliers =
+                (List<Supplier>) em.createQuery("SELECT s FROM Supplier s").getResultList();
+        System.out.println("Suppliers:");
+        for (Supplier s : suppliers) {
+            System.out.println(String.format("  %s: %s", s.CompanyName,s.bankAccountNumber));
+        }
+
+        List<Customer> customers =
+                (List<Customer>) em.createQuery("SELECT s FROM Customer s").getResultList();
+        System.out.println("Customers:");
+        for (Customer c : customers) {
+            System.out.println(String.format("  %s: %f", c.CompanyName, c.getDiscount()));
         }
 
         transaction.commit();
