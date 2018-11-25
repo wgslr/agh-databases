@@ -184,11 +184,16 @@ public class App {
     }
 
     private static void listOrders(Scanner scanner) {
-        List<Order> orders = getAll(Order.class);
-        orders.forEach(o -> {
+        List result = entityManager.createQuery("SELECT o, o.products.size FROM Order o")
+                .getResultList();
+
+        for (Object pair : result) {
+            Order o = (Order) ((Object[]) pair)[0];
+            int count = (Integer) ((Object[]) pair)[1];
+
             System.out.println(String.format("%02d: %d products for %s",
-                    o.getOrderID(), o.getProducts().size(), o.getCustomer().CompanyName));
-        });
+                    o.getOrderID(), count, o.getCustomer().CompanyName));
+        }
     }
 
     private static void deliverOrder(Scanner scanner) {
