@@ -1,8 +1,8 @@
 import javax.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Company {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+abstract public class Company {
     @Id
     String CompanyName;
 
