@@ -1,3 +1,6 @@
+import com.sun.org.apache.xpath.internal.operations.Or;
+import org.apache.derby.impl.store.raw.log.Scan;
+import org.apache.derby.vti.Restriction;
 import org.omg.PortableInterceptor.SUCCESSFUL;
 
 import javax.persistence.EntityManager;
@@ -5,7 +8,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 
 public class App {
@@ -25,6 +30,9 @@ public class App {
             mainMenu.addOption("List suppliers", App::listSuppliers);
             mainMenu.addOption("Add customer", App::addCustomer);
             mainMenu.addOption("List customers", App::listCustomers);
+            mainMenu.addOption("Order products", App::createOrder);
+            mainMenu.addOption("List orders", App::listOrders);
+            mainMenu.addOption("Deliver order", App::deliverOrder);
             mainMenu.addOption("Exit", x -> {
                 cleanup();
                 System.exit(0);
@@ -125,7 +133,7 @@ public class App {
         System.out.println("City: ");
         city = readNonemptyLine(scanner);
 
-        System.out.println("Bank account: ");
+        System.out.println("Discount: ");
         discount = scanner.nextDouble();
 
         Customer c = new Customer(name, street, city, discount);
@@ -140,6 +148,66 @@ public class App {
 
         System.out.println("Name");
         customers.stream().map(c -> c.CompanyName).forEach(System.out::println);
+    }
+
+    private static void createOrder(Scanner scanner) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        Order order = new Order();
+
+        List<Customer> customers = getAll(Customer.class);
+        List<Product> products = getAll(Product.class);
+
+        CliMenu customerMenu = new CliMenu("Choose customer");
+        customers.forEach(c ->
+                customerMenu.addOption(c.CompanyName, x -> order.setCustomer(c))
+        );
+        customerMenu.display();
+
+        CliMenu orderMenu = new CliMenu("");
+        orderMenu.setOneshot(false);
+        orderMenu.addOption("Add product", makeProductPicker(order, products));
+        orderMenu.addOption("Finish order", x -> orderMenu.setOneshot(true));
+        orderMenu.display();
+
+        entityManager.persist(order);
+        transaction.commit();
+    }
+
+    private static Consumer<Scanner> makeProductPicker(Order order, List<Product> products) {
+        CliMenu productMenu = new CliMenu("Choose customer");
+        products.forEach(p ->
+                productMenu.addOption(p.ProductName, x -> order.addProduct(p))
+        );
+        return scanner -> productMenu.display();
+    }
+
+    private static void listOrders(Scanner scanner) {
+        List<Order> orders = getAll(Order.class);
+        orders.forEach(o -> {
+            System.out.println(String.format("%02d: %d products for %s",
+                    o.getOrderID(), o.getProducts().size(), o.getCustomer().CompanyName));
+        });
+    }
+
+    private static void deliverOrder(Scanner scanner) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        List<Order> orders = getAll(Order.class);
+        CliMenu orderMenu = new CliMenu("Choose order");
+
+        // circumvent read-only variables in lambda
+        Order[] selected = new Order[1];
+
+        orders.forEach(o ->
+                orderMenu.addOption(String.valueOf(o.getOrderID()), x -> selected[0] = o)
+        );
+        orderMenu.display();
+
+        entityManager.remove(selected[0]);
+        transaction.commit();
     }
 
     private static <T> List<T> getAll(Class<T> entity) {
