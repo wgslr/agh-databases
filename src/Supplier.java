@@ -5,39 +5,35 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@SecondaryTable(name = "Address")
 public class Supplier {
     @Id
     String CompanyName;
 
-    @Embedded
-    private Address Address;
+    @Column(table = "Address")
+    String Street;
+    @Column(table = "Address")
+    String City;
 
     @OneToMany
-    @JoinColumn(name = "SUPPLIED_BY")
+    @JoinColumn(name="SUPPLIED_BY")
     private Set<Product> supplies = new HashSet<>();
 
     public Supplier() {
     }
 
-    public Supplier(String companyName, String street, String city, String country) {
+    public Supplier(String companyName, String street, String city) {
         CompanyName = companyName;
-        this.Address = new Address(street, city, country);
+        Street = street;
+        City = city;
     }
 
-    public void addSuppliedProduct(Product p) {
+    public void addSuppliedProduct(Product p){
         supplies.add(p);
         p.setSuppliedBy(this);
     }
 
-    public boolean suppliesProduct(Product p) {
+    public boolean suppliesProduct(Product p){
         return supplies.contains(p);
-    }
-
-    public Address getAddress() {
-        return Address;
-    }
-
-    public void setAddress(Address address) {
-        Address = address;
     }
 }
