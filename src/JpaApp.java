@@ -19,12 +19,14 @@ public class JpaApp {
         EntityManager em = getEntityManager();
 
         EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
 
         Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow");
         List<Product> products = Stream.of("Komputer", "Myszka", "CPU", "Pan Tadeusz",
                 "Harry Potter")
                 .map(Product::new)
                 .peek(p -> p.UnitsOnStock = 100)
+                .peek(em::persist)
                 .collect(Collectors.toList());
 
         List<Category> categories = Stream.of("Elektronika", "Ksiazki")
@@ -39,7 +41,9 @@ public class JpaApp {
 
         products.subList(0, 3).forEach(p -> categories.get(0).addProduct(p));
         products.subList(3, 5).forEach(p -> categories.get(1).addProduct(p));
+        categories.forEach(em::persist);
 
+        em.persist(s);
 
         Invoice inv1 = new Invoice();
         Invoice inv2 = new Invoice();
@@ -49,9 +53,13 @@ public class JpaApp {
 
         inv2.addProduct(products.get(2), 2);
 
+        em.persist(inv1);
+        em.persist(inv2);
 
         transaction.commit();
+
         transaction = em.getTransaction();
+        transaction.begin();
 
         List<Invoice> invoices = em.createQuery("from Invoice").getResultList();
 
