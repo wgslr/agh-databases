@@ -22,6 +22,7 @@ public class JpaApp {
         transaction.begin();
 
         Supplier s = new Supplier("Komputronik", "Kamienskiego", "Krakow", "Polska");
+        Supplier s2 = new Supplier("Cyfronet", "Kawiory", "Krakow", "Polska");
         List<Product> products = Stream.of("Komputer", "Myszka", "CPU", "Pan Tadeusz",
                 "Harry Potter")
                 .map(Product::new)
@@ -44,6 +45,7 @@ public class JpaApp {
         categories.forEach(em::persist);
 
         em.persist(s);
+        em.persist(s2);
 
         Invoice inv1 = new Invoice();
         Invoice inv2 = new Invoice();
