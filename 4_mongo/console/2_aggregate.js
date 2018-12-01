@@ -1,3 +1,4 @@
+use jeopardy
 db.question.aggregate([
         {$addFields:
           {
