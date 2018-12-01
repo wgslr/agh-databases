@@ -7,7 +7,7 @@ db.question.mapReduce(
     let prevDate = null;
     let differences = []
 
-    value = value.sort()
+    value = value.sort((x, y) => x - y)
 
     for(let i = 0; i < value.length; ++i) {
       if(prevDate != null){
