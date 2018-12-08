@@ -13,6 +13,6 @@ db.question.aggregate([
           {_id: "$year", count: {$sum: 1}, first_show: {$min: "$_id"}}
         },
         {$sort:
-          {count: -1, first: -1}
+          {count: -1, first_show: -1}
         }
 ])

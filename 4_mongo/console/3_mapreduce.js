@@ -1,3 +1,4 @@
+use jeopardy
 db.question.createIndex({air_date: 1})
 db.question.mapReduce(
   function() {
