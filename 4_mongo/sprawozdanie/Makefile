@@ -1,3 +1,3 @@
-render:
-	-mv sprawozdanie.pdf sprawozdanie.old.pdf
-	pandoc ./sprawozdanie.md -o ../sprawozdanie/sprawozdanie.pdf
+GeislerWojciech.pdf: GeislerWojciech.md
+	-mv $@ GeislerWojciech.old.pdf
+	pandoc ./$< -o ../sprawozdanie/$@
