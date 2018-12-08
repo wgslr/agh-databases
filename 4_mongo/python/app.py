@@ -57,7 +57,9 @@ def yearly_report(collection):
 
 
 def frequencies(collection):
-    # fixme db.question.createIndex({air_date: 1})
+    # using "sort" parameter in mapReduce requires an index
+    # as the database hits RAM usage limit otherwise
+    collection.create_index([('air_date', 1)])
 
     mapper = Code("""
         function() {
@@ -110,25 +112,32 @@ if __name__ == '__main__':
     client = pymongo.MongoClient(HOST, PORT)
     questions = client[DB][COLLECTION]
 
-    print("Calculating yearly statistics...")
+    print("Calculating yearly statistics (aggregate)...")
     yearly = list(yearly_report(questions))
     first = yearly[0]
-    print("Most shows aired in year {year} ({count}), starting with show no {no}".format(
+    print("Highest number of shows aired in year {year} ({count}), starting with show number {no}".format(
         year=first['_id'], count=first['count'], no=first['first_show']
     ))
 
-    print("Rest of the years, in descending order of shows number:")
+    print("\nRest of the years, in descending order of shows number:")
     for y in yearly[1:]:
-        print("year {year}: {count} shows starting with {no}".format(
+        print("year {year}: {count} shows starting with number {no}".format(
             year=y['_id'], count=y['count'], no=y['first_show']
         ))
+    print()
+
+    print("Calculating average time between questions of the same kind (mapReduce)...")
 
     mrresults = frequencies(questions)
-    print(list(mrresults.find({'_id': 'Tiebreaker'})))
+    for freq in mrresults.find():
+        print("{kind} questions happen on average every {days:.2f} days"
+            .format(kind=freq['_id'], days=freq['value']))
 
-    print("Country of interest [Poland]:", end=' ')
-    inp = input()
-    print(inp)
+
+
+
+    print()
+    inp = input("Let's find mentions of... [Poland]:")
     country = inp if inp != "" else "Poland"
 
     for q in find_mentions(questions, country):
