@@ -22,6 +22,10 @@ db.question.mapReduce(
       const diff = curr.earliest - v.latest;
       const newCount = v.count + curr.count + 1;
 
+      if (diff < 0) {
+        throw "ordering error";
+      }
+
       v.avg = (v.avg * v.count + curr.avg * curr.count + diff) / newCount;
       v.latest = value[i].latest;
       v.count = newCount;
