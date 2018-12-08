@@ -11,10 +11,6 @@ db.question.mapReduce(
   },
   function(key, value) {
     // sort dates in ascending order
-    
-    // FIXME ensure that no overlapping ranges are being merged
-    value = value.sort((x, y) => x.latest - y.latest);
-
     let v = value[0];
 
     for(let i = 1; i < value.length; ++i) {
@@ -23,11 +19,12 @@ db.question.mapReduce(
       const newCount = v.count + curr.count + 1;
 
       if (diff < 0) {
+        // sanity check
         throw "ordering error";
       }
 
       v.avg = (v.avg * v.count + curr.avg * curr.count + diff) / newCount;
-      v.latest = value[i].latest;
+      v.latest = curr.latest;
       v.count = newCount;
     }
     return v;
