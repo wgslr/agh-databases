@@ -52,7 +52,7 @@ def yearly_report(collection):
         {'$group':
          {'_id': "$year", 'count': {'$sum': 1}, 'first_show': {'$min': "$_id"}}
          },
-        {'$sort': SON([('count', -1), ('first', -1)])}
+        {'$sort': SON([('count', -1), ('first_show', -1)])}
     ])
 
 
@@ -110,7 +110,18 @@ if __name__ == '__main__':
     client = pymongo.MongoClient(HOST, PORT)
     questions = client[DB][COLLECTION]
 
-    print("\n".join(str(x) for x in yearly_report(questions)))
+    print("Calculating yearly statistics...")
+    yearly = list(yearly_report(questions))
+    first = yearly[0]
+    print("Most shows aired in year {year} ({count}), starting with show no {no}".format(
+        year=first['_id'], count=first['count'], no=first['first_show']
+    ))
+
+    print("Rest of the years, in descending order of shows number:")
+    for y in yearly[1:]:
+        print("year {year}: {count} shows starting with {no}".format(
+            year=y['_id'], count=y['count'], no=y['first_show']
+        ))
 
     mrresults = frequencies(questions)
     print(list(mrresults.find({'_id': 'Tiebreaker'})))
