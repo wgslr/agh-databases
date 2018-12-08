@@ -11,7 +11,6 @@ db.question.mapReduce(
     emit(this.round, value)
   },
   function(key, value) {
-    // sort dates in ascending order
     let v = value[0];
 
     for(let i = 1; i < value.length; ++i) {

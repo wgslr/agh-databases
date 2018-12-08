@@ -1,33 +1,14 @@
 ---
-title: "Bazy danych: Hibernate"
+title: "Bazy danych: Mongo DB"
 author: Wojciech Geisler
 geometry: margin=2cm
 output: pdf_document
 toc: true
 ---
 
-## Konfiguracja środowiska
-
-Do uruchomienia lokalnej instancji mongodb użyłem obrazu dockera `mongo:4.0`. Całość opisuje plik `docker-compose.yaml`:
-
-```yaml
-version: "2.2"
-
-services:
-  mongo:
-    image: mongo:4.0
-    network_mode: host
-    volumes:
-      - "db-mongo:/data/db"
-
-volumes:
-  "db-mongo":
-```
-
-
 ## Import danych
 
-W celu użycia polecenia `mongoimport` konieczne było edycja pliku `JEOPARDY_QUESTIONS1.json` aby zawierał osobne obiekty json, nie objęte listą, to znaczy do postaci:
+W celu użycia polecenia `mongoimport` konieczna była edycja pliku `JEOPARDY_QUESTIONS1.json` aby zawierał osobne obiekty json, nie objęte listą. Wynikowa postać:
 
 ```json
   {
@@ -173,7 +154,7 @@ Otrzymane wyniki wskazuję, że pytania "Tiebreaker" zdarzają się średnio co
 
 Kod aplikacji znajduje się w pliku `app.py`. W katalogu `env` znajduje się wirtualne środowisko pythona z zainstalowanym pakietem `pymongo`. Skrypt `run.sh` aktywuje to środowisko i uruchamia `app.py`.
 
-Po uruchomieniu aplikacja w pierwszej kolejności wykonuje odpowiednik zapytania (2):
+Po uruchomieniu aplikacja w pierwszej kolejności wykonuje odpowiednik zapytania (2). W poniższym fragmencie kodu warta odnotowania jest konieczność użycia obiektu `SON` zachowującego kolejność podanych parametrów, w odróżenieniu od pythonowego `dict`.
 
 ```py
 def yearly_report(collection):
@@ -254,7 +235,7 @@ def frequencies(collection):
     return resultscol
 ```
 
-![MapReduce](images/py2_mapreduce.png)
+![MapReduce](images/py2_mapreduce.png)\ 
 
 Na koniec wykonywany jest odpowiednik podstawowego zapytania "find". Użytkownik ma możliwość podania własnego wyrazu do wyszukania. Wciśnięcie "enter" powoduje użycie domyślnego słowa "Poland".
 
@@ -284,4 +265,4 @@ answer:   {q[answer]}
 """.format(q=question)
 ```
 
-![Find](./images/py3_simple.png)
+![Find](./images/py3_simple.png)\ 

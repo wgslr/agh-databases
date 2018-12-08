@@ -129,7 +129,7 @@ if __name__ == '__main__':
     print("Calculating average time between questions of the same kind (mapReduce)...")
 
     mrresults = frequencies(questions)
-    for freq in mrresults.find():
+    for freq in mrresults.find().sort('value'):
         print("{kind} questions happen on average every {days:.2f} days"
             .format(kind=freq['_id'], days=freq['value']))
 
