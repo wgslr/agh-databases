@@ -1,0 +1,11 @@
+version: "2.2"
+
+services:
+  mongo:
+    image: mongo:4.0
+    network_mode: host
+    volumes:
+      - "db-mongo:/data/db"
+
+volumes:
+  "db-mongo":
