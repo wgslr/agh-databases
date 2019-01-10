@@ -15,6 +15,14 @@ public class Solution {
         System.out.println(findRatedMoviesForUser("maheshksp"));
         System.out.println(findCommonMoviesForActors("Emma Watson", "Daniel Radcliffe"));
         System.out.println(findMovieRecommendationForUser("emileifrem"));
+
+        final String newMovie = "Tales of D17";
+        final String newActor = "Alan Turing";
+        final String birtplace = "London";
+        final String birthday = "-1815350400";
+
+        System.out.println(addActorWithMovie(newActor, newMovie));
+        System.out.println(setBirth(newActor, birtplace, birthday));
     }
 
     private String findActorByName(final String actorName) {
@@ -52,4 +60,21 @@ public class Solution {
         return graphDatabase.runCypher(String.format(query, userLogin));
     }
 
+    private void addMovie(final String title)  {
+        String query = "CREATE (m:Movie {title: \"%s\"})";
+        graphDatabase.runCypher(String.format(query, title));
+    }
+
+
+    private String addActorWithMovie( final String actorName, final String title) {
+        String query = "CREATE (a:Actor {name: \"%s\"}) -[:ACTS_IN]-> (m:Movie {title: \"%s\"})";
+        return graphDatabase.runCypher(String.format(query, actorName, title));
+    }
+
+    private String setBirth(final String actorName, final String place, final String date) {
+        String query = "MATCH (a:Actor {name: \"%s\"}) " +
+                "SET a.birthday = \"%s\", a.birthplace = \"%s\"" +
+                "RETURN a";
+        return graphDatabase.runCypher(String.format(query, actorName, date, place));
+    }
 }
