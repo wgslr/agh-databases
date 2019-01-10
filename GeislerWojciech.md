@@ -6,7 +6,7 @@ output: pdf_document
 toc: true
 ---
 
-# Zadanie 3: Implementacja metod w klasie Solution
+## Zadanie 3: Implementacja metod w klasie Solution
 
 ```java
 public class Solution {
@@ -63,3 +63,69 @@ public class Solution {
 
 }
 ```
+
+Wyniki:
+
+![](./images/zad3_output.png)\ 
+
+## Zadanie 4: Dodanie aktora i filmu
+
+```java
+        final String newMovie = "Tales of D17";
+        final String newActor = "Alan Turing";
+
+        System.out.println(addActorWithMovie(newActor, newMovie));
+
+// ...
+
+    private String addActorWithMovie( final String actorName, final String title) {
+        String query = "CREATE (a:Actor {name: \"%s\"}) -[:ACTS_IN]-> (m:Movie {title: \"%s\"})";
+        return graphDatabase.runCypher(String.format(query, actorName, title));
+    }
+```
+
+Wyniki:
+
+![](./images/zad4_output.png)\ 
+
+## Zadanie 5: Ustawić datę i miejsce urodzenia:
+
+```java
+        final String birtplace = "London";
+        final String birthday = "-1815350400";
+
+        System.out.println(setBirth(newActor, birtplace, birthday));
+
+// ...
+
+    private String setBirth(final String actorName, final String place, final String date) {
+        String query = "MATCH (a:Actor {name: \"%s\"}) " +
+                "SET a.birthday = \"%s\", a.birthplace = \"%s\"" +
+                "RETURN a";
+        return graphDatabase.runCypher(String.format(query, actorName, date, place));
+    }
+````
+
+Wyniki:
+
+![](./images/zad5_output.png)\ 
+
+## Zadanie 6: Znaleźć aktorów grających w co najmniej 6 filmach
+
+```java
+        System.out.println(findBusyActors(6));
+
+// ...
+
+    private String findBusyActors(final int minimumMovies) {
+        String query = "MATCH (a:Actor) -[:ACTS_IN]-> (m:Movie) " +
+                "WITH a, collect(m.title) as movies " +
+                "WHERE length(movies) >= %d " +
+                "RETURN a.name";
+        return graphDatabase.runCypher(String.format(query, minimumMovies));
+    }
+```
+
+Wyniki:
+
+![](./images/zad6_output.png)\ 
