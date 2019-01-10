@@ -25,6 +25,9 @@ public class Solution {
         System.out.println(setBirth(newActor, birtplace, birthday));
 
         System.out.println(findBusyActors(6));
+        System.out.println(computeAverage(7));
+
+        System.out.println(actingDirectors(5));
     }
 
     private String findActorByName(final String actorName) {
@@ -62,13 +65,8 @@ public class Solution {
         return graphDatabase.runCypher(String.format(query, userLogin));
     }
 
-    private void addMovie(final String title)  {
-        String query = "CREATE (m:Movie {title: \"%s\"})";
-        graphDatabase.runCypher(String.format(query, title));
-    }
 
-
-    private String addActorWithMovie( final String actorName, final String title) {
+    private String addActorWithMovie(final String actorName, final String title) {
         String query = "CREATE (a:Actor {name: \"%s\"}) -[:ACTS_IN]-> (m:Movie {title: \"%s\"})";
         return graphDatabase.runCypher(String.format(query, actorName, title));
     }
@@ -88,4 +86,21 @@ public class Solution {
         return graphDatabase.runCypher(String.format(query, minimumMovies));
     }
 
+    private String computeAverage(final int minimumMovies) {
+        String query = "MATCH (a:Actor) -[:ACTS_IN]-> (m:Movie) " +
+                "WITH a, collect(m.title) as movies " +
+                "WHERE length(movies) >= %d " +
+                "RETURN avg(length(movies))";
+        return graphDatabase.runCypher(String.format(query, minimumMovies));
+    }
+
+    private String actingDirectors(final int minimumMovies) {
+        String query = "MATCH (a:Actor)-[:DIRECTED]->(m:Movie), " +
+                "(a:Actor) -[:ACTS_IN]-> (m2:Movie) " +
+                "WITH a,  count(m2) AS acted " +
+                "WHERE acted >= %d " +
+                "RETURN a.name, acted " +
+                "ORDER BY acted DESC ";
+        return graphDatabase.runCypher(String.format(query, minimumMovies));
+    }
 }
