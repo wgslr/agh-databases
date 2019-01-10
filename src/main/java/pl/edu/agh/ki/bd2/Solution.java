@@ -18,23 +18,38 @@ public class Solution {
     }
 
     private String findActorByName(final String actorName) {
-        return null;
+        return graphDatabase.runCypher(
+                String.format("MATCH (p:Person {name: \"%s\"}) return p", actorName)
+        );
     }
 
     private String findMovieByTitleLike(final String movieName) {
-        return null;
+        String query = "MATCH (m:Movie) WHERE m.title CONTAINS \"%s\" RETURN m.title LIMIT 1";
+        return graphDatabase.runCypher(String.format(query, movieName));
     }
 
     private String findRatedMoviesForUser(final String userLogin) {
-        return null;
+        String query = "MATCH (u:User {login: \"%s\"}) -[:RATED]-> (m:Movie) RETURN m.title";
+        return graphDatabase.runCypher(String.format(query, userLogin));
     }
 
     private String findCommonMoviesForActors(String actorOne, String actrorTwo) {
-        return null;
+        String query = "MATCH (a1:Actor {name: \"%s\"}) -[:ACTS_IN]-> (m:Movie) <-[:ACTS_IN]-" +
+                "(a2:Actor {name: \"%s\"}) RETURN m.title";
+        return graphDatabase.runCypher(String.format(query, actorOne, actrorTwo));
     }
 
+    /**
+     * Finds movies rated highly be people who has given the same rating
+     * to some movie as the given user.
+     */
     private String findMovieRecommendationForUser(final String userLogin) {
-        return null;
+        String query = "MATCH (u:User {login: \"%s\"}) " +
+                "-[r1:RATED]-> (m:Movie) " +
+                "<-[r2:RATED]- (other:User) " +
+                "-[r3:RATED]-> (m2:Movie) " +
+                "WHERE r1.stars = r2.stars AND r3.stars >= 3 RETURN m2.title";
+        return graphDatabase.runCypher(String.format(query, userLogin));
     }
 
 }

@@ -1,5 +1,7 @@
 package pl.edu.agh.ki.bd2;
 
+import com.google.common.graph.Graph;
+
 import java.io.IOException;
 
 public class Main {
