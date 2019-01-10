@@ -23,6 +23,8 @@ public class Solution {
 
         System.out.println(addActorWithMovie(newActor, newMovie));
         System.out.println(setBirth(newActor, birtplace, birthday));
+
+        System.out.println(findBusyActors(6));
     }
 
     private String findActorByName(final String actorName) {
@@ -77,4 +79,13 @@ public class Solution {
                 "RETURN a";
         return graphDatabase.runCypher(String.format(query, actorName, date, place));
     }
+
+    private String findBusyActors(final int minimumMovies) {
+        String query = "MATCH (a:Actor) -[:ACTS_IN]-> (m:Movie) " +
+                "WITH a, collect(m.title) as movies " +
+                "WHERE length(movies) >= %d " +
+                "RETURN a.name";
+        return graphDatabase.runCypher(String.format(query, minimumMovies));
+    }
+
 }
