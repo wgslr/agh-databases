@@ -28,7 +28,7 @@ public class Solution {
 
     private String findActorByName(final String actorName) {
         return graphDatabase.runCypher(
-                String.format("MATCH (p:Person {name: \"%s\"}) return p", actorName)
+                String.format("MATCH (p:Actor {name: \"%s\"}) return p", actorName)
         );
     }
 
@@ -168,7 +168,46 @@ Wyniki:
                 "ORDER BY acted DESC ";
         return graphDatabase.runCypher(String.format(query, minimumMovies));
     }
+```
 
 Wyniki:
 
 ![](./images/zad8_output.png)\ 
+
+## Zadanie 9: Wypisać film oceniony przez znajomego i jego ocenę
+
+```java
+        final String username = "maheshksp";
+        System.out.println(friendRatings(username));
+
+// ...
+
+    private String friendRatings(final String user) {
+        String query = "MATCH (u:User {login: \"%s\"}) " +
+                "-[:FRIEND]-> (f:User) -[r:RATED]-> (m:Movie) " +
+                "RETURN f.name, r.stars, m.title";
+        return graphDatabase.runCypher(String.format(query, user));
+    }
+```
+
+Wyniki:
+
+![](./images/zad9_output.png)\ 
+
+## Zadanie 10: Ścieżki między aktorami
+
+```java
+        System.out.println(pathsBetweenActors("Simon Pegg", "Emma Watson"));
+
+// ...
+
+    private String pathsBetweenActors(final String actorOne, final String actorTwo) {
+        String query = "MATCH path = (a:Actor {name: \"%s\"}) -[*1..6]- (b:Actor {name: \"%s\"}) " +
+                "RETURN DISTINCT [n IN nodes(path) WHERE NOT \"Movie\" IN LABELS(n) | n.name]";
+        return graphDatabase.runCypher(String.format(query, actorOne, actorTwo));
+    }
+```
+
+Wyniki:
+
+![](./images/zad10_output.png)\ 
