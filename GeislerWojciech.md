@@ -244,14 +244,14 @@ Pomiar czasu wyszukiwania w Javie:
         start = System.nanoTime();
         graphDatabase.runCypher(query);
         end = System.nanoTime();
-        System.out.println(String.format("With index:\t\t%7d μs", (end - start) / 1000));
+        System.out.println(String.format("With index:\t\t%7d us", (end - start) / 1000));
 
         graphDatabase.runCypher("DROP INDEX ON :Actor(name)");
 
         start = System.nanoTime();
         graphDatabase.runCypher(query);
         end = System.nanoTime();
-        System.out.println(String.format("Without index:\t%7d μs", (end - start) / 1000));
+        System.out.println(String.format("Without index:\t%7d us", (end - start) / 1000));
     }
 ```
 
@@ -293,7 +293,7 @@ Pomiary czasu szukania ścieżki w Javie:
         graphDatabase.runCypher(query);
         end = System.nanoTime();
         System.out.println(String.format(
-                "Shortest path with index:\t\t%7d μs", (end - start) / 1000));
+                "Shortest path with index:\t\t%7d us", (end - start) / 1000));
 
         graphDatabase.runCypher("DROP INDEX ON :Actor(name)");
         graphDatabase.runCypher("DROP INDEX ON :Movie(title)");
@@ -302,7 +302,7 @@ Pomiary czasu szukania ścieżki w Javie:
         graphDatabase.runCypher(query);
         end = System.nanoTime();
         System.out.println(String.format(
-                "Shortest path without index:\t%7d μs", (end - start) / 1000));
+                "Shortest path without index:\t%7d us", (end - start) / 1000));
     }
 ```
 
