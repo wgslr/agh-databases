@@ -26,13 +26,21 @@ public class Solution {
 
         System.out.println(findBusyActors(6));
         System.out.println(computeAverage(7));
-
         System.out.println(actingDirectors(5));
+
+        final String username = "maheshksp";
+        System.out.println(friendRatings(username));
+
+        System.out.println(pathsBetweenActors("Simon Pegg", "Emma Watson"));
+
+        profileActorSearch("Simon Pegg");
+        System.out.println();
+        profileShortestPath("Simon Pegg", "Emma Watson");
     }
 
     private String findActorByName(final String actorName) {
         return graphDatabase.runCypher(
-                String.format("MATCH (p:Person {name: \"%s\"}) return p", actorName)
+                String.format("MATCH (p:Actor {name: \"%s\"}) return p", actorName)
         );
     }
 
@@ -102,5 +110,76 @@ public class Solution {
                 "RETURN a.name, acted " +
                 "ORDER BY acted DESC ";
         return graphDatabase.runCypher(String.format(query, minimumMovies));
+    }
+
+    private String friendRatings(final String user) {
+        String query = "MATCH (u:User {login: \"%s\"}) " +
+                "-[:FRIEND]-> (f:User) -[r:RATED]-> (m:Movie) " +
+                "RETURN f.name, r.stars, m.title";
+        return graphDatabase.runCypher(String.format(query, user));
+    }
+
+    private String pathsBetweenActors(final String actorOne, final String actorTwo) {
+        String query = "MATCH path = (a:Actor {name: \"%s\"}) -[*1..6]- (b:Actor {name: \"%s\"}) " +
+                "RETURN DISTINCT [n IN nodes(path) WHERE NOT \"Movie\" IN LABELS(n) | n.name]";
+        return graphDatabase.runCypher(String.format(query, actorOne, actorTwo));
+    }
+
+    // nie zwraca wyników profilowania
+    // w sprawozdaniu zamieściłem wyniki tych komend wywołanych W GUI
+    private void profileActorSearch(final String actorName) {
+        long start, end;
+        final String query = String.format("MATCH (p:Actor {name: \"%s\"}) return p", actorName);
+
+        try {
+            graphDatabase.runCypher("CREATE INDEX ON :Actor(name)");
+        } catch (Exception ignored) { // Prevent failure if index already exists
+        }
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format("With index:\t\t%7d μs", (end - start) / 1000));
+
+        graphDatabase.runCypher("DROP INDEX ON :Actor(name)");
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format("Without index:\t%7d μs", (end - start) / 1000));
+    }
+
+    private void profileShortestPath(final String actorOne, final String actorTwo) {
+        long start, end;
+        final String query = String.format(
+                "MATCH path = shortestPath(" +
+                        "(a:Actor {name: \"%s\"}) -[*]-(b:Actor {name: \"%s\"})) " +
+                        "RETURN path",
+                actorOne, actorTwo);
+
+        try {
+            graphDatabase.runCypher("CREATE INDEX ON :Actor(name)");
+        } catch (Exception ignored) { // Prevent failure if index already exists
+        }
+
+        try {
+            graphDatabase.runCypher("CREATE INDEX ON :Movie(title)");
+        } catch (Exception ignored) { // Prevent failure if index already exists
+        }
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format(
+                "Shortest path with index:\t\t%7d μs", (end - start) / 1000));
+
+        graphDatabase.runCypher("DROP INDEX ON :Actor(name)");
+        graphDatabase.runCypher("DROP INDEX ON :Movie(title)");
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format(
+                "Shortest path without index:\t%7d μs", (end - start) / 1000));
     }
 }
