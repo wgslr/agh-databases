@@ -68,6 +68,8 @@ Wyniki:
 
 ![](./images/zad3_output.png)\ 
 
+\clearpage
+
 ## Zadanie 4: Dodanie aktora i filmu
 
 ```java
@@ -88,6 +90,8 @@ Wyniki:
 
 ![](./images/zad4_output.png)\ 
 
+\clearpage
+
 ## Zadanie 5: Ustawić datę i miejsce urodzenia:
 
 ```java
@@ -104,11 +108,13 @@ Wyniki:
                 "RETURN a";
         return graphDatabase.runCypher(String.format(query, actorName, date, place));
     }
-````
+```
 
 Wyniki:
 
 ![](./images/zad5_output.png)\ 
+
+\clearpage
 
 ## Zadanie 6: Znaleźć aktorów grających w co najmniej 6 filmach
 
@@ -131,6 +137,8 @@ Wyniki:
 ![](./images/zad6_output.png)\ 
 
 
+\clearpage
+
 ## Zadanie 7: średnia wystąpień w filmach dla aktorów o co najmniej 7 filmach
 
 ```java
@@ -151,6 +159,8 @@ Wyniki:
 
 ![](./images/zad7_output.png)\ 
 
+
+\clearpage
 
 ## Zadanie 8: aktorzy co najmniej 5 filmóœ z doświadczeniem reżyserskim
 
@@ -174,6 +184,8 @@ Wyniki:
 
 ![](./images/zad8_output.png)\ 
 
+\clearpage
+
 ## Zadanie 9: Wypisać film oceniony przez znajomego i jego ocenę
 
 ```java
@@ -194,6 +206,8 @@ Wyniki:
 
 ![](./images/zad9_output.png)\ 
 
+\clearpage
+
 ## Zadanie 10: Ścieżki między aktorami
 
 ```java
@@ -212,6 +226,8 @@ Wyniki:
 
 ![](./images/zad10_output.png)\ 
 
+\clearpage
+
 ## Zadanie 11: Profilowanie
 
 Ponieważ w wynikach zapytań uzyskiwanych w Javie nie ma informacji z komendy `PROFILE`, posłużyłem się interfejsem webowym:
@@ -227,6 +243,7 @@ CREATE INDEX ON :ACTOR(name)
 ```
 
 Wyszukanie z indeksem
+
 ![](./images/index_search.png)\ 
 
 Pomiar czasu wyszukiwania w Javie:
@@ -265,7 +282,8 @@ Wyznaczanie najkrótszej ścieżki bez indeksu:
 
 Wyznaczanie najkrótszej ścieżki z indeksem:
 
-![](./images/index_shortest.png)\ 
+![](./images/index_shortest.png)\
+
 
 Pomiary czasu szukania ścieżki w Javie:
 
