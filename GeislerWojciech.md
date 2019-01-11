@@ -211,3 +211,102 @@ Wyniki:
 Wyniki:
 
 ![](./images/zad10_output.png)\ 
+
+## Zadanie 11: Profilowanie
+
+Ponieważ w wynikach zapytań uzyskiwanych w Javie nie ma informacji z komendy `PROFILE`, posłużyłem się interfejsem webowym:
+
+Wyszukanie aktora bez indeksu:
+
+![](./images/no_index_search.png)\ 
+
+Dodanie indeksu:
+
+```cipher
+CREATE INDEX ON :ACTOR(name)
+```
+
+Wyszukanie z indeksem
+![](./images/index_search.png)\ 
+
+Pomiar czasu wyszukiwania w Javie:
+
+```java
+    private void profileActorSearch(final String actorName) {
+        long start, end;
+        final String query = String.format("MATCH (p:Actor {name: \"%s\"}) return p", actorName);
+
+        try {
+            graphDatabase.runCypher("CREATE INDEX ON :Actor(name)");
+        } catch (Exception ignored) { // Prevent failure if index already exists
+        }
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format("With index:\t\t%7d μs", (end - start) / 1000));
+
+        graphDatabase.runCypher("DROP INDEX ON :Actor(name)");
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format("Without index:\t%7d μs", (end - start) / 1000));
+    }
+```
+
+
+![](./images/search_time.png)\ 
+
+
+Wyznaczanie najkrótszej ścieżki bez indeksu:
+
+![](./images/no_index_shortest.png)\ 
+
+Wyznaczanie najkrótszej ścieżki z indeksem:
+
+![](./images/index_shortest.png)\ 
+
+Pomiary czasu szukania ścieżki w Javie:
+
+
+```java
+    private void profileShortestPath(final String actorOne, final String actorTwo) {
+        long start, end;
+        final String query = String.format(
+                "MATCH path = shortestPath(" +
+                        "(a:Actor {name: \"%s\"}) -[*]-(b:Actor {name: \"%s\"})) " +
+                        "RETURN path",
+                actorOne, actorTwo);
+
+        try {
+            graphDatabase.runCypher("CREATE INDEX ON :Actor(name)");
+        } catch (Exception ignored) { // Prevent failure if index already exists
+        }
+
+        try {
+            graphDatabase.runCypher("CREATE INDEX ON :Movie(title)");
+        } catch (Exception ignored) { // Prevent failure if index already exists
+        }
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format(
+                "Shortest path with index:\t\t%7d μs", (end - start) / 1000));
+
+        graphDatabase.runCypher("DROP INDEX ON :Actor(name)");
+        graphDatabase.runCypher("DROP INDEX ON :Movie(title)");
+
+        start = System.nanoTime();
+        graphDatabase.runCypher(query);
+        end = System.nanoTime();
+        System.out.println(String.format(
+                "Shortest path without index:\t%7d μs", (end - start) / 1000));
+    }
+```
+
+
+![](./images/shortest_time.png)\ 
+
+Jak się okazuje, wpływ indeksu na to przeszukiwanie nie jest wystarczająco znaczący, bo wpłynąć pozytywnie na pomiar czasu.
