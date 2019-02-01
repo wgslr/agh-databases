@@ -1,0 +1,19 @@
+{
+  "patients": [
+    {
+      "id": 1,
+      "name": "\"Imie\"",
+      "surname": "\"Nazwisko\""
+    },
+    {
+      "id": 2,
+      "name": "Janek",
+      "surname": "Kowalski"
+    },
+    {
+      "id": 3,
+      "name": "Jan",
+      "surname": "Kowalski"
+    }
+  ]
+}
